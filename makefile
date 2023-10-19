@@ -41,14 +41,12 @@
 
 
 # top level module
-TOP = tb
+TOP = tb_buffer
 TOP_SYN = tb_syn
-# DESIGN_NAME = traffic_control_1_hot
-DESIGN_NAME = traffic_control
+DESIGN_NAME = buffer
 
 # List of the design files
-# DESIGN_FILES = ./design/traffic_control_1_hot.v
-DESIGN_FILES = ./design/traffic_control.v
+DESIGN_FILES = ./design/buffer.v
 NETLIST_FILES = ./netlist/*.v
 
 # List of the testbench files
