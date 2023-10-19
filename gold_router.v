@@ -46,13 +46,23 @@ input wire pero;
 reg [63:0] pe_output_buffer_odd;
 reg [63:0] pe_output_buffer_even;
 
-assign wire dir 
+//Direction:Needed for Switching from Input to Output Buffer
+	//Need to check Hop as well
+assign wire dir_cw_odd = cw_input_buffer_odd[30];
+assign wire dir_cw_even = cw_input_buffer_even[30];
+assign wire dir_ccw_odd = ccw_input_buffer_odd[30];
+assign wire dir_ccw_even = ccw_input_buffer_even[30];
+assign wire dir_pe_odd[7:0] = pe_input_buffer_odd [30];
+assign wire dir_pe_even[7:0] = pe_input_buffer_even [30];
+
+//Hop Cycles:Needed for deciding whether to send to the appointed direction or to the processor output buffer
+	//if hop[0]==0, then to processor; if hop[0] != 0, then hop[7:0] shifts right and to the directed buffer
 assign wire hop_cw_odd[7:0] = cw_input_buffer_odd[25:18];
 assign wire hop_cw_even[7:0] = cw_input_buffer_even[25:18];	
 assign wire hop_ccw_odd[7:0] = ccw_input_buffer_odd[25:18];
 assign wire hop_ccw_even[7:0] = ccw_input_buffer_even[25:18];
-assign wire hop_pedi_odd[7:0] = pe_input_buffer_odd [25:18];
-assign wire hop_pedi_even[7:0] = pe_input_buffer_even [25:18];
+assign wire hop_pe_odd[7:0] = pe_input_buffer_odd [25:18];
+assign wire hop_pe_even[7:0] = pe_input_buffer_even [25:18];
 
 
 //wire [7:0] hop;
