@@ -46,10 +46,13 @@ input wire pero;
 reg [63:0] pe_output_buffer_odd;
 reg [63:0] pe_output_buffer_even;
 
-
-assign wire hop_cw[7:0] = cwdi[25:18];
-assign wire hop_ccw[7:0] = ccwdi[25:18];
-assign wire hop_pedi[7:0] = ccwdi [25:18];
+assign wire dir 
+assign wire hop_cw_odd[7:0] = cw_input_buffer_odd[25:18];
+assign wire hop_cw_even[7:0] = cw_input_buffer_even[25:18];	
+assign wire hop_ccw_odd[7:0] = ccw_input_buffer_odd[25:18];
+assign wire hop_ccw_even[7:0] = ccw_input_buffer_even[25:18];
+assign wire hop_pedi_odd[7:0] = pe_input_buffer_odd [25:18];
+assign wire hop_pedi_even[7:0] = pe_input_buffer_even [25:18];
 
 
 //wire [7:0] hop;
@@ -74,7 +77,7 @@ reg pe_priority;
   wire ccw_output_empty = (ccw_granted == 0);
   wire pe_output_empty = (pe_granted == 0);
 
-  // Routing logic
+// Routing logic
 always @ (posedge clk or posedge reset) begin
 	if (reset) begin
 	cwdo = 0;
@@ -119,8 +122,6 @@ case (state) begin
 
 if (cwsi && cwri) begin
 
-
-
 //Clock-Wise Check
 
 
@@ -131,9 +132,9 @@ if (cwsi && cwri) begin
   // Polarity tracking logic
   always @ (posedge clk or posedge reset) begin
     if (reset) begin
-      polarity <= 1'b0; // Even cycle during reset
-    end else if (rising_edge) begin
-      polarity <= ~polarity; // Toggle the polarity
+	polarity <= 1'b0; end // Even cycle during reset
+    else begin
+	polarity <= ~polarity; // Toggle the polarity
     end
   end
 endmodule
