@@ -123,23 +123,20 @@ always @ (posedge clk or posedge reset) begin
   // ...
 
 
-//Clockwise Buffer
+//Clockwise Input Buffer
 if (cwsi && cwri) begin
+	
 
 // Combinational Logic for Routing
 always @(*)
 case (state) begin
-
-if (cwsi && cwri) begin
-
+	if (polarity) begin
+		if (cwsi && cwri) begin
+		cw_input_buffer_odd = 
 //Clock-Wise Check
 
 
-
-
-
-
-  // Polarity tracking logic
+  // Polarity 
   always @ (posedge clk or posedge reset) begin
     if (reset) begin
 	polarity <= 1'b0; end // Even cycle during reset
