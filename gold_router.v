@@ -103,6 +103,12 @@ buffer pe_odd_in(clk, reset, pe_odd_wen, ,pedi[63:0], pe_input_empty, ~pe_input_
 buffer pe_even_in(clk, reset, pe_odd_wen, ,pedi[63:0], ~pe_input_empty, pe_input_empty, pe_input_buffer_odd[63:0]);
 
 //Output Buffer Instantiation
+arbitor_buffer cw_odd_out(clk, reset, cw_odd_wen, pe_od_wen , ,cwdi[63:0], cw_input_empty, ~cw_input_empty, cw_input_buffer_odd[63:0]); 
+arbitor_buffer cw_even_out(clk, reset, cw_even_wen, pe_even_wen , ,cwdi[63:0], ~cw_input_empty, cw_input_empty, cw_input_buffer_even[63:0]);
+arbitor_buffer ccw_odd_out(clk, reset, ccw_odd_wen, pe_od_wen , ,ccwdi[63:0], ccw_input_empty, ~ccw_input_empty, ccw_input_buffer_odd[63:0]);
+arbitor_buffer ccw_even_out(clk, reset, ccw_even_wen, pe_even_wen , ,ccwdi[63:0], ~ccw_input_empty, ccw_input_empty, ccw_input_buffer_even[63:0]);
+arbitor_buffer pe_odd_out(clk, reset, cw_odd_wen, ccw_odd_wen , ,pedi[63:0], pe_input_empty, ~pe_input_empty, pe_input_buffer_odd[63:0]);
+arbitor_buffer pe_even_out(clk, reset, cw_even_wen, ccw_even_wen , ,pedi[63:0], ~pe_input_empty, pe_input_empty, pe_input_buffer_odd[63:0]);
 
 // Routing logic
 always @ (posedge clk or posedge reset) begin
