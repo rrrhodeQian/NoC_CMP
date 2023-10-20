@@ -88,12 +88,12 @@ reg pe_priority;
   wire ccw_output_empty = (ccw_granted == 0);
   wire pe_output_empty = (pe_granted == 0);
 
-assign wire cw_even_wen = cwri & polarity;
-assign wire cw_odd_wen = cwri & ~polarity;
-assign wire cww_even_wen = cwwri & polarity;
-assign wire cww_odd_wen = cwwri & ~polarity;
-assign wire pe_even_wen = peri & polarity;
-assign wire pe_odd_wen = peri & ~polarity;
+assign wire cw_even_wen = cwri & ~polarity;
+assign wire cw_odd_wen = cwri & polarity;
+assign wire cww_even_wen = cwwri & ~polarity;
+assign wire cww_odd_wen = cwwri & polarity;
+assign wire pe_even_wen = peri & ~polarity;
+assign wire pe_odd_wen = peri & polarity;
 //Input Buffer Instantiation
 buffer cw_odd_in(clk, reset, cw_odd_wen, ,cwdi[63:0], cw_input_empty, ~cw_input_empty, cw_input_buffer_odd[63:0]); 
 buffer cw_even_in(clk, reset, cw_eveb_wen, ,cwdi[63:0], ~cw_input_empty, cw_input_empty, cw_input_buffer_even[63:0]);
