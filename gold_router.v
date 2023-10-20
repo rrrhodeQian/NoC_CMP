@@ -1,4 +1,4 @@
-module CardinalRouter (clk, reset, cwdi, cwsi, cwri, ccwdi, 
+module gold_router(clk, reset, cwdi, cwsi, cwri, ccwdi, 
 ccwsi, ccwri, pedi, pesi, peri, cwdo, cwso, cwro, ccwdo, ccwso, ccwro, pedo, peso, pero);
 
 input wire clk;
@@ -80,35 +80,48 @@ reg [1:0] ccw_priority;
 reg pe_priority;
 
 
-// Buffer full/empty status
-  wire cw_input_empty = (cw_requestor == 0);
-  wire ccw_input_empty = (ccw_requestor == 0);
-  wire pe_input_empty = (pe_requestor == 0);
-  wire cw_output_empty = (cw_granted == 0);
-  wire ccw_output_empty = (ccw_granted == 0);
-  wire pe_output_empty = (pe_granted == 0);
+// Input Buffer full/empty status
+reg cw_odd_input_empty;
+reg cw_even_input_empty;
+reg ccw_odd_input_empty;
+reg ccw_even_input_empty;
+reg pe_odd_input_empty;
+reg pe_even_input_empty;
 
+// Output Buffer full/empty status
+wire cw_odd_output_empty;
+wire ccw_odd_output_empty;
+wire pe_odd_output_empty;
+wire cw_even_output_empty;
+wire ccw_even_output_empty;
+wire pe_even_output_empty;
+
+//Input Buffer Write Enables
 assign wire cw_even_wen = cwri & ~polarity;
 assign wire cw_odd_wen = cwri & polarity;
 assign wire cww_even_wen = cwwri & ~polarity;
 assign wire cww_odd_wen = cwwri & polarity;
 assign wire pe_even_wen = peri & ~polarity;
 assign wire pe_odd_wen = peri & polarity;
+
+//Output Buffer Write Enables
+
+Read Enables
 //Input Buffer Instantiation
-buffer cw_odd_in(clk, reset, cw_odd_wen, ,cwdi[63:0], cw_input_empty, ~cw_input_empty, cw_input_buffer_odd[63:0]); 
-buffer cw_even_in(clk, reset, cw_eveb_wen, ,cwdi[63:0], ~cw_input_empty, cw_input_empty, cw_input_buffer_even[63:0]);
-buffer ccw_odd_in(clk, reset, ccw_odd_wen, ,ccwdi[63:0], ccw_input_empty, ~ccw_input_empty, ccw_input_buffer_odd[63:0]);
+	buffer cw_odd_in(clk, reset, cw_odd_wen, ,cwdi[63:0], cw_odd_input_empty, ~cw_odd_input_empty, cw_input_buffer_odd[63:0]); 
+	buffer cw_even_in(clk, reset, cw_eveb_wen, ,cwdi[63:0], ~cw_input_empty, cw_even_input_empty, cw_input_buffer_even[63:0]);
+	buffer ccw_odd_in(clk, reset, ccw_odd_wen, ,ccwdi[63:0], ccw_odd_input_empty, ~ccw_odd_input_empty, ccw_input_buffer_odd[63:0]);
 buffer ccw_even_in(clk, reset, ccw_even_wen, ,ccwdi[63:0], ~ccw_input_empty, ccw_input_empty, ccw_input_buffer_even[63:0]);
-buffer pe_odd_in(clk, reset, pe_odd_wen, ,pedi[63:0], pe_input_empty, ~pe_input_empty, pe_input_buffer_odd[63:0]);
+	buffer pe_odd_in(clk, reset, pe_odd_wen, ,pedi[63:0], pe_odd_input_empty, ~pe_input_empty, pe_input_buffer_odd[63:0]);
 buffer pe_even_in(clk, reset, pe_odd_wen, ,pedi[63:0], ~pe_input_empty, pe_input_empty, pe_input_buffer_odd[63:0]);
 
 //Output Buffer Instantiation
-arbitor_buffer cw_odd_out(clk, reset, cw_odd_wen, pe_od_wen , ,cwdi[63:0], cw_input_empty, ~cw_input_empty, cw_input_buffer_odd[63:0]); 
-arbitor_buffer cw_even_out(clk, reset, cw_even_wen, pe_even_wen , ,cwdi[63:0], ~cw_input_empty, cw_input_empty, cw_input_buffer_even[63:0]);
-arbitor_buffer ccw_odd_out(clk, reset, ccw_odd_wen, pe_od_wen , ,ccwdi[63:0], ccw_input_empty, ~ccw_input_empty, ccw_input_buffer_odd[63:0]);
-arbitor_buffer ccw_even_out(clk, reset, ccw_even_wen, pe_even_wen , ,ccwdi[63:0], ~ccw_input_empty, ccw_input_empty, ccw_input_buffer_even[63:0]);
-arbitor_buffer pe_odd_out(clk, reset, cw_odd_wen, ccw_odd_wen , ,pedi[63:0], pe_input_empty, ~pe_input_empty, pe_input_buffer_odd[63:0]);
-arbitor_buffer pe_even_out(clk, reset, cw_even_wen, ccw_even_wen , ,pedi[63:0], ~pe_input_empty, pe_input_empty, pe_input_buffer_odd[63:0]);
+	arbitor_buffer cw_odd_out(clk, reset, cw_odd_wen, pe_od_wen , , ,cwdi[63:0], cw_input_empty, ~cw_input_empty, cw_input_buffer_odd[63:0]); 
+	arbitor_buffer cw_even_out(clk, reset, cw_even_wen, pe_even_wen , , ,cwdi[63:0], ~cw_input_empty, cw_input_empty, cw_input_buffer_even[63:0]);
+	arbitor_buffer ccw_odd_out(clk, reset, ccw_odd_wen, pe_od_wen , , ,ccwdi[63:0], ccw_input_empty, ~ccw_input_empty, ccw_input_buffer_odd[63:0]);
+	arbitor_buffer ccw_even_out(clk, reset, ccw_even_wen, pe_even_wen , , ,ccwdi[63:0], ~ccw_input_empty, ccw_input_empty, ccw_input_buffer_even[63:0]);
+	arbitor_buffer pe_odd_out(clk, reset, cw_odd_wen, ccw_odd_wen , , ,pedi[63:0], pe_input_empty, ~pe_input_empty, pe_input_buffer_odd[63:0]);
+	arbitor_buffer pe_even_out(clk, reset, cw_even_wen, ccw_even_wen , , ,pedi[63:0], ~pe_input_empty, pe_input_empty, pe_input_buffer_odd[63:0]);
 
 // Routing logic
 always @ (posedge clk or posedge reset) begin
