@@ -57,28 +57,13 @@ assign wire dir_pe_odd[7:0] = pe_input_buffer_odd [30];
 assign wire dir_pe_even[7:0] = pe_input_buffer_even [30];
 
 //Hop Cycles:Needed for deciding whether to send to the appointed direction or to the processor output buffer
-	//if hop[0]==0, then to processor; if hop[0] != 0, then hop[7:0] shifts right and to the directed buffer
+//if hop[0]==0, then to processor; if hop[0] != 0, then hop[7:0] shifts right and to the directed buffer
 assign wire hop_cw_odd[7:0] = cw_input_buffer_odd[25:18];
 assign wire hop_cw_even[7:0] = cw_input_buffer_even[25:18];	
 assign wire hop_ccw_odd[7:0] = ccw_input_buffer_odd[25:18];
 assign wire hop_ccw_even[7:0] = ccw_input_buffer_even[25:18];
 assign wire hop_pe_odd[7:0] = pe_input_buffer_odd [25:18];
 assign wire hop_pe_even[7:0] = pe_input_buffer_even [25:18];
-
-
-//wire [7:0] hop;
-//assign hop = packet[25:18];
-// Signals to track the state of the router
-reg [1:0] cw_requestor;
-reg [1:0] ccw_requestor;
-reg pe_requestor;
-reg cw_granted;
-reg ccw_granted;
-reg pe_granted;
-reg [1:0] cw_priority;
-reg [1:0] ccw_priority;
-reg pe_priority;
-
 
 // Input Buffer full/empty status
 reg cw_odd_input_empty;
@@ -97,7 +82,7 @@ wire ccw_even_output_empty;
 wire pe_even_output_empty;
 
 //Input Buffer Write Enables
-assign wire cw_even_wen = cwri & ~polarity;
+assign wire cw_even_wen = cw_even_input_empty & ~polarity;
 assign wire cw_odd_wen = cwri & polarity;
 assign wire cww_even_wen = cwwri & ~polarity;
 assign wire cww_odd_wen = cwwri & polarity;
