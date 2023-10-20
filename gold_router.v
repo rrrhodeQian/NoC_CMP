@@ -4,6 +4,7 @@ ccwsi, ccwri, pedi, pesi, peri, cwdo, cwso, cwro, ccwdo, ccwso, ccwro, pedo, pes
 input wire clk;
 input wire reset;
 output reg polarity;
+
 //Clockwise Input Buffer/Virtual Channels
 input wire [63:0] cwdi;
 input wire cwsi;
@@ -87,6 +88,22 @@ reg pe_priority;
   wire ccw_output_empty = (ccw_granted == 0);
   wire pe_output_empty = (pe_granted == 0);
 
+assign wire cw_even_wen = cwri & polarity;
+assign wire cw_odd_wen = cwri & ~polarity;
+assign wire cww_even_wen = cwwri & polarity;
+assign wire cww_odd_wen = cwwri & ~polarity;
+assign wire pe_even_wen = peri & polarity;
+assign wire pe_odd_wen = peri & ~polarity;
+//Input Buffer Instantiation
+buffer cw_odd_in(clk, reset, cw_odd_wen, ,cwdi[63:0], cw_input_empty, ~cw_input_empty, cw_input_buffer_odd[63:0]); 
+buffer cw_even_in(clk, reset, cw_eveb_wen, ,cwdi[63:0], ~cw_input_empty, cw_input_empty, cw_input_buffer_even[63:0]);
+buffer ccw_odd_in(clk, reset, ccw_odd_wen, ,ccwdi[63:0], ccw_input_empty, ~ccw_input_empty, ccw_input_buffer_odd[63:0]);
+buffer ccw_even_in(clk, reset, ccw_even_wen, ,ccwdi[63:0], ~ccw_input_empty, ccw_input_empty, ccw_input_buffer_even[63:0]);
+buffer pe_odd_in(clk, reset, pe_odd_wen, ,pedi[63:0], pe_input_empty, ~pe_input_empty, pe_input_buffer_odd[63:0]);
+buffer pe_even_in(clk, reset, pe_odd_wen, ,pedi[63:0], ~pe_input_empty, pe_input_empty, pe_input_buffer_odd[63:0]);
+
+//Output Buffer Instantiation
+
 // Routing logic
 always @ (posedge clk or posedge reset) begin
 	if (reset) begin
@@ -121,22 +138,30 @@ always @ (posedge clk or posedge reset) begin
 
   // Additional logic for data forwarding, header updates, and polarity tracking
   // ...
-//Input Ready Combinational Logi
+//Input Ready Combinational Logic
 always @(*) begin
-if (
+end
 
-	
+		
 always @(posedge clk) begin
+        if (reset) begin
+            mem <= 'b0;
+            flag <= 1'b0;
 //Clockwise Input Buffer
-if (cwsi && cwri && polarity) begin
+if (cwsi && cwri) begin
+	
+	if (polarity) begin
+		cw_input_buffer_even[63:0] = cwdi[63:0]; end
+	else begin
+		cw_input_buffer_odd[63:0] = cwdi[63:0];
 
 end
 // Combinational Logic for Routing
 always @(*)
-case (state) begin
+
 	if (polarity) begin
 		if (cwsi && cwri) begin
-		cw_input_buffer_odd = 
+			
 //Clock-Wise Check
 
 
