@@ -1,9 +1,9 @@
 module cardinal_nic #(
-    PAC_WIDTH = 64
+    parameter PAC_WIDTH = 64
 ) (
     input [0:1] addr,//memory address mapped registers
     input [0:PAC_WIDTH-1] d_in,//input packet from the PE
-    output reg [0:PAC_WIDTH-1] d_out;//content of the register specified by addr[0:1]
+    output reg [0:PAC_WIDTH-1] d_out,//content of the register specified by addr[0:1]
     input nicEn,//enable signal to the NIC
     input nicWrEn,//write enable signal to the NIC
     input net_si,//send handshaking signal for the network input channel
@@ -14,7 +14,7 @@ module cardinal_nic #(
     output [0:PAC_WIDTH-1] net_do,//packet data for the network output channel
     input net_polarity,//polarity input from the router connnected to the NIC
     input clk,
-    input reset,//sync high active reset
+    input reset//sync high active reset
 );
     wire [0:PAC_WIDTH-1] in_buf_d_out, out_buf_d_out;//data ouput of input and output buffer
     wire in_buf_status, out_buf_status;//status reg of input and out buffer
@@ -48,13 +48,14 @@ module cardinal_nic #(
     
     assign in_buf_wen = (~in_buf_status) & net_si;//enable writing input buffer when input buffer is empty and net_si is asserted
     assign in_buf_ren = nicEn & (~nicWrEn);
-    assign out_buf_wen = (nicEn && nicWrEn && addr == 2'b10) ? 1'b1 : 1'b0;//enable writing output buffer when nicEN and nicWrEn are asserted and address is pointed to output buffer
+    //enable writing output buffer when nicEn and nicWrEn are asserted and address is pointed to output buffer
+    assign out_buf_wen = (nicEn && nicWrEn && addr == 2'b10) ? 1'b1 : 1'b0;
     //enable reading output buffer only when router input channel is ready, output buffer is full and data vc bit matches with router polarity
     assign out_buf_ren = (net_ro && out_buf_status && ((net_polarity && !out_buf_d_out[0]) || (!net_polarity && out_buf_d_out[0]))) ? 1'b1 : 1'b0;
 
     //logic for d_out
     always @(*) begin
-        if (nicEN && !nicWrEn) begin
+        if (nicEn && !nicWrEn) begin
             case (addr)
                 2'b00: d_out = in_buf_d_out;
                 2'b01: d_out = {63'b0, in_buf_status};
