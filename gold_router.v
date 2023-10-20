@@ -121,12 +121,16 @@ always @ (posedge clk or posedge reset) begin
 
   // Additional logic for data forwarding, header updates, and polarity tracking
   // ...
+//Input Ready Combinational Logi
+always @(*) begin
+if (
 
-
-//Clockwise Input Buffer
-if (cwsi && cwri) begin
 	
+always @(posedge clk) begin
+//Clockwise Input Buffer
+if (cwsi && cwri && polarity) begin
 
+end
 // Combinational Logic for Routing
 always @(*)
 case (state) begin
