@@ -1,0 +1,154 @@
+
+#
+# Preferences
+#
+preferences set plugin-enable-svdatabrowser-new 1
+preferences set toolbar-sendToIndago-WaveWindow {
+  usual
+  position -pos 1
+}
+preferences set toolbar-Standard-Console {
+  usual
+  position -pos 1
+}
+preferences set toolbar-Search-Console {
+  usual
+  position -pos 2
+}
+preferences set plugin-enable-groupscope 0
+preferences set plugin-enable-interleaveandcompare 0
+preferences set plugin-enable-waveformfrequencyplot 0
+preferences set whats-new-dont-show-at-startup 1
+
+#
+# Mnemonic Maps
+#
+mmap new -reuse -name {Boolean as Logic} -radix %b -contents {{%c=FALSE -edgepriority 1 -shape low}
+{%c=TRUE -edgepriority 1 -shape high}}
+mmap new -reuse -name {Example Map} -radix %x -contents {{%b=11???? -bgcolor orange -label REG:%x -linecolor yellow -shape bus}
+{%x=1F -bgcolor red -label ERROR -linecolor white -shape EVENT}
+{%x=2C -bgcolor red -label ERROR -linecolor white -shape EVENT}
+{%x=* -label %x -linecolor gray -shape bus}}
+
+#
+# Design Browser windows
+#
+if {[catch {window new WatchList -name "Design Browser 1" -geometry 730x500+268+291}] != ""} {
+    window geometry "Design Browser 1" 730x500+268+291
+}
+window target "Design Browser 1" on
+browser using {Design Browser 1}
+browser set -scope  simulator::tb_cardinal_nic.dut 
+browser set \
+    -signalsort name
+browser yview see  simulator::tb_cardinal_nic.dut 
+browser timecontrol set -lock 0
+
+#
+# Waveform windows
+#
+if {[catch {window new WaveWindow -name "Waveform 1" -geometry 2560x1369+0+23}] != ""} {
+    window geometry "Waveform 1" 2560x1369+0+23
+}
+window target "Waveform 1" on
+waveform using {Waveform 1}
+waveform sidebar visibility partial
+waveform set \
+    -primarycursor TimeD \
+    -signalnames name \
+    -signalwidth 175 \
+    -units ps \
+    -valuewidth 75
+waveform baseline set -time 0
+
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.PAC_WIDTH
+	} ]
+set id [waveform add -signals  {
+	{simulator::tb_cardinal_nic.dut.addr[0:1]}
+	} ]
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.clk
+	} ]
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.net_polarity
+	} ]
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.net_ro
+	} ]
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.net_so
+	} ]
+set id [waveform add -signals  {
+	{simulator::tb_cardinal_nic.dut.d_in[0:63]}
+	} ]
+waveform format $id -radix %b
+set id [waveform add -signals  {
+	{simulator::tb_cardinal_nic.dut.net_do[0:63]}
+	} ]
+waveform format $id -radix %b
+set id [waveform add -signals  {
+	{simulator::tb_cardinal_nic.dut.d_out[0:63]}
+	} ]
+waveform format $id -radix %b
+set id [waveform add -signals  {
+	{simulator::tb_cardinal_nic.dut.in_buf_d_out[0:63]}
+	} ]
+waveform format $id -radix %b
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.in_buf_status
+	} ]
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.in_buf_ren
+	} ]
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.in_buf_wen
+	} ]
+set id [waveform add -signals  {
+	{simulator::tb_cardinal_nic.dut.net_di[0:63]}
+	} ]
+waveform format $id -radix %b
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.net_si
+	} ]
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.net_ri
+	} ]
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.nicEn
+	} ]
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.nicWrEn
+	} ]
+set id [waveform add -signals  {
+	{simulator::tb_cardinal_nic.dut.out_buf_d_out[0:63]}
+	} ]
+waveform format $id -radix %b
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.out_buf_ren
+	} ]
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.out_buf_status
+	} ]
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.out_buf_wen
+	} ]
+set id [waveform add -signals  {
+	simulator::tb_cardinal_nic.dut.reset
+	} ]
+
+waveform xview limits 89030ps 111530ps
+
+#
+# Waveform Window Links
+#
+
+#
+# Console windows
+#
+console set -windowname Console
+window geometry Console 730x250+267+823
+
+#
+# Layout selection
+#

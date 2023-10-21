@@ -41,12 +41,12 @@
 
 
 # top level module
-TOP = tb_buffer
+TOP = tb_cardinal_nic
 TOP_SYN = tb_syn
-DESIGN_NAME = buffer
+DESIGN_NAME = cardinal_nic
 
 # List of the design files
-DESIGN_FILES = ./design/buffer.v
+DESIGN_FILES = ./design/*.v
 NETLIST_FILES = ./netlist/*.v
 
 # List of the testbench files
