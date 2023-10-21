@@ -41,12 +41,12 @@
 
 
 # top level module
-TOP = tb_cardinal_nic
+TOP = tb_arbiter
 TOP_SYN = tb_syn
-DESIGN_NAME = cardinal_nic
+DESIGN_NAME = arbiter
 
 # List of the design files
-DESIGN_FILES = ./design/*.v
+DESIGN_FILES = ./design/arbiter.v
 NETLIST_FILES = ./netlist/*.v
 
 # List of the testbench files
