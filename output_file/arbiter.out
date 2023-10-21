@@ -1,0 +1,10 @@
+At time  0 ns, rq0 = 0, rq1 = 0, gt0 = 0, gt1 = 0
+At time  8 ns, rq0 = 1, rq1 = 1, gt0 = 1, gt1 = 0
+At time 10 ns, rq0 = 1, rq1 = 1, gt0 = 0, gt1 = 1
+At time 14 ns, rq0 = 1, rq1 = 1, gt0 = 1, gt1 = 0
+At time 18 ns, rq0 = 1, rq1 = 1, gt0 = 0, gt1 = 1
+At time 22 ns, rq0 = 1, rq1 = 1, gt0 = 1, gt1 = 0
+At time 26 ns, rq0 = 1, rq1 = 1, gt0 = 0, gt1 = 1
+At time 30 ns, rq0 = 1, rq1 = 1, gt0 = 1, gt1 = 0
+At time 32 ns, rq0 = 0, rq1 = 1, gt0 = 0, gt1 = 1
+At time 48 ns, rq0 = 0, rq1 = 0, gt0 = 0, gt1 = 0
