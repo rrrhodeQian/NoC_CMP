@@ -47,7 +47,7 @@ module cardinal_nic #(
     assign net_so = out_buf_ren;//same as output buffer read enable
     
     assign in_buf_wen = (~in_buf_status) & net_si;//enable writing input buffer when input buffer is empty and net_si is asserted
-    assign in_buf_ren = nicEn & (~nicWrEn);
+    assign in_buf_ren = (nicEn && (~nicWrEn) && addr == 2'b00) ? 1'b1 : 1'b0;//enable read only if processor wants to
     //enable writing output buffer when nicEn and nicWrEn are asserted and address is pointed to output buffer
     assign out_buf_wen = (nicEn && nicWrEn && addr == 2'b10) ? 1'b1 : 1'b0;
     //enable reading output buffer only when router input channel is ready, output buffer is full and data vc bit matches with router polarity

@@ -29,7 +29,7 @@ always #(CLK_PERIOD/2) clk=~clk;
 
 always @(posedge clk) begin
     if (reset) begin
-        net_polarity <= 1'b0;
+        net_polarity <= 1'b1;
     end
     else
         net_polarity <= ~net_polarity;
@@ -42,6 +42,8 @@ initial begin
         $finish;
     end
 
+    $fmonitor(fd, "At time %3d ns, d_in = %b, net_polarity = %b, net_so = %b, net_ro = %b, net_do = %b", $time, d_in, net_polarity, net_so, net_ro, net_do);
+    $fmonitor(fd, "At time %3d ns, d_out = %b", $time, d_out);
 end
 
 initial begin
@@ -57,31 +59,54 @@ initial begin
     #(CLK_PERIOD) reset <= 1'b1;
     #(CLK_PERIOD) reset <= 1'b0;
 
-    //data flow: processor -> router
+    #(CLK_PERIOD*0.5);
+    //non-blocking handshaking test
+    $fdisplay(fd, "------non-blocking handshaking test------------");
     addr <= 2'b10;//pointing to output channel buffer
     nicEn <= 1'b1;
     nicWrEn <= 1'b1;
     net_ro <= 1'b1;//router always ready for receiving
-    $fdisplay(fd, "------data flow: from processor to router------");
-    repeat(100) begin
-        d_in <= {$random, $random};
-        #(CLK_PERIOD*0.5);
-        $fdisplay(fd, "At time %3d ns, d_in = %b, net_polarity = %b, net_so = %b, net_do = %b", $time, d_in, net_polarity, net_so, net_do);
-        #(CLK_PERIOD*0.5);
-    end
-    $fdisplay(fd, "-----------------------------------------------");
-    nicWrEn <= 1'b0;//disable processor writing
-    addr <= 2'b00;//pointing to input channle buffer
+    d_in <= {1'b1, $random, 31'b0};
+    #(CLK_PERIOD*4);
+    d_in <= {1'b0, $random, 31'b0};
+    #(CLK_PERIOD*3);
+
+    //blocking handshaking test
+    $fdisplay(fd, "------blocking handshaking test----------------");
     net_ro <= 1'b0;
-    net_si <= 1'b1;//router always sending
-    $fdisplay(fd, "------data flow: from router to processor------");
-    repeat(100) begin
-        net_di <= {$random, $random};
-        #(CLK_PERIOD*0.5);
-        $fdisplay(fd, "At time %3d ns, net_di = %b, net_ri = %b, d_out = %b", $time, net_di, net_ri, d_out);
-        #(CLK_PERIOD*0.5);
-    end
-    $fdisplay(fd, "-----------------------------------------------");
+    d_in <= {1'b1, $random, 31'b0};
+    #(CLK_PERIOD*2);
+    net_ro <= 1'b1;
+    #(CLK_PERIOD*4);
+
+    //load operation
+    $fdisplay(fd, "------------load operation test----------------");
+    net_ro <= 1'b0;
+    d_in <= {$random, $random};
+    #(CLK_PERIOD*2);
+    addr <= 2'b11;//pointing to output channel status register
+    nicWrEn <= 1'b0;//disable writing
+    #(CLK_PERIOD*2);
+    //attempt to load again 
+    addr <= 2'b10;
+    nicWrEn <= 1'b1;
+    d_in <= {$random, $random};
+    #(CLK_PERIOD*2);
+    addr <= 2'b11;//pointing to output channel status register
+    nicWrEn <= 1'b0;//disable writing
+    #(CLK_PERIOD);
+
+    //store opration
+    $fdisplay(fd, "-----------store operation test----------------");
+    net_si <= 1'b1;//router sending
+    addr <= 2'b00;//pointing to input channel buffer
+    net_di <= {$random, $random};
+    #(CLK_PERIOD*2);
+    addr <= 2'b01;
+    #(CLK_PERIOD*2);
+    net_si <= 1'b1;//attempt to send again
+    net_di <= {$random, $random};
+    #(CLK_PERIOD*4);
     $fclose(fd);
     $finish();
 end
