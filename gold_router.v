@@ -1,6 +1,7 @@
 module gold_router(clk, reset, cwdi, cwsi, cwri, ccwdi, 
 ccwsi, ccwri, pedi, pesi, peri, cwdo, cwso, cwro, ccwdo, ccwso, ccwro, pedo, peso, pero);
 
+//-------------------------------------------------------------------------
 input wire clk;
 input wire reset;
 output reg polarity;
@@ -9,173 +10,709 @@ output reg polarity;
 input wire [63:0] cwdi;
 input wire cwsi;
 output reg cwri;
-reg [63:0] cw_input_buffer_odd;
-reg [63:0] cw_input_buffer_even;
+wire [63:0] cw_input_buffer_odd;
+wire [63:0] cw_input_buffer_even;
 
 //CounterClockwise Input Buffer/Virtual Channels
 input wire [63:0] ccwdi;
 input wire ccwsi;
 output reg ccwri;
-reg [63:0] ccw_input_buffer_odd;
-reg [63:0] ccw_input_buffer_even;
+wire [63:0] ccw_input_buffer_odd;
+wire [63:0] ccw_input_buffer_even;
 
 //Processor Input Buffer/Virtual Channels
 input wire [63:0] pedi;
 input wire pesi;
 output reg oeri;
-reg [63:0] pe_input_buffer_odd;
-reg [63:0] pe_input_buffer_even;
+wire [63:0] pe_input_buffer_odd;
+wire [63:0] pe_input_buffer_even;
 
 //Clockwise Output Buffer/Virtual Channels
 output reg [63:0] cwdo;
 output reg cwso;
 input wire cwro;
-reg [63:0] cw_output_buffer_odd;
-reg [63:0] cw_output_buffer_even;
+wire [63:0] cw_output_buffer_odd;
+wire [63:0] cw_output_buffer_even;
 
 //CounterClockwise Output Buffer/Virtual Channels
 output reg [63:0] ccwdo;
 output reg ccwso;
 input wire ccwro;
-reg [63:0] ccw_output_buffer_odd;
-reg [63:0] ccw_output_buffer_even;
+wire [63:0] ccw_output_buffer_odd;
+wire [63:0] ccw_output_buffer_even;
 	
 //Processor Output Buffer/Virtual Channels
 output reg [63:0] pedo;
 output reg peso;
 input wire pero;
-reg [63:0] pe_output_buffer_odd;
-reg [63:0] pe_output_buffer_even;
+wire [63:0] pe_output_buffer_odd;
+wire [63:0] pe_output_buffer_even;
+
+//---------------------------------------------------------------------------------------------------------------------
+//Polarity Bit
+assign wire polarity_cw_in= cwdi[63];
+assign wire polarity_ccw_in = ccwdi[63];
+assign wire polarity_pe_in = pedi[63];
 
 //Direction:Needed for Switching from Input to Output Buffer
 	//Need to check Hop as well
-assign wire dir_cw_odd = cw_input_buffer_odd[30];
-assign wire dir_cw_even = cw_input_buffer_even[30];
-assign wire dir_ccw_odd = ccw_input_buffer_odd[30];
-assign wire dir_ccw_even = ccw_input_buffer_even[30];
-assign wire dir_pe_odd[7:0] = pe_input_buffer_odd [30];
-assign wire dir_pe_even[7:0] = pe_input_buffer_even [30];
+assign wire dir_cw_in[7:0] = cwdi[62];
+assign wire dir_ccw_in [7:0] = ccdwi[62];
+assign wire dir_pe_in[7:0] = pedi [62];
 
 //Hop Cycles:Needed for deciding whether to send to the appointed direction or to the processor output buffer
 //if hop[0]==0, then to processor; if hop[0] != 0, then hop[7:0] shifts right and to the directed buffer
-assign wire hop_cw_odd[7:0] = cw_input_buffer_odd[25:18];
-assign wire hop_cw_even[7:0] = cw_input_buffer_even[25:18];	
-assign wire hop_ccw_odd[7:0] = ccw_input_buffer_odd[25:18];
-assign wire hop_ccw_even[7:0] = ccw_input_buffer_even[25:18];
-assign wire hop_pe_odd[7:0] = pe_input_buffer_odd [25:18];
-assign wire hop_pe_even[7:0] = pe_input_buffer_even [25:18];
+assign wire hop_cw_in[7:0] = cwdi[55:48];
+assign wire hop_ccw_in[7:0] = ccwdi[55:48];
+assign wire hop_pe_in[7:0] = pedi [55:48];
 
-// Input Buffer full/empty status
-reg cw_odd_input_empty;
-reg cw_even_input_empty;
-reg ccw_odd_input_empty;
-reg ccw_even_input_empty;
-reg pe_odd_input_empty;
-reg pe_even_input_empty;
+//Source Value: Needed for Future Assignment. Will Modify Functionality in Phase 2
+assign wire source_cw_in[15:0] = cwdi[47:32];
+assign wire source_ccw_in[15:0] = ccwdi[47:32];
+assign wire source_pe_in[15:0] = pedi[47:32];
+//------------------------------------------------------------------------------------------------------------------------
 
-// Output Buffer full/empty status
+
+
+//------------------------------------------------------------------
+//Ready Write For Input Buffers Combinational Logic 
+// Input Buffer empty status sent to sender router
+
+always @(*) begin
+if (polarity) begin
+	if (cw_odd_input_empty) begin
+		cwri = 1; end
+	else begin
+		cwri = 0; end
+	if (cww_odd_input_empty) begin
+		cwwri = 1; end
+	else begin
+		cwwri = 0; end
+	if (pe_odd_input_empty) begin
+		peri = 1; end
+	else begin
+		peri = 0; end
+end
+else begin
+	if (cw_even_input_empty) begin
+		cwri = 1; end
+	else begin
+		cwri = 0; end
+	if (cww_even_input_empty) begin
+		cwwri = 1; end
+	else begin
+		cwwri = 0; end
+	if (pe_even_input_empty) begin
+		peri = 1; end
+	else begin
+		peri = 0; end
+end
+end
+//-------------------------------------------------------------------
+//Input Buffer Write Enables that allows the buffer to write
+wire cw_even_input_wen;
+wire cw_odd_input_wen;
+wire cww_even_input_wen;
+wire cww_odd_input_wen;
+wire pe_even_input_wen;
+wire pe_odd_input_wen;
+
+always @(*) begin
+    if (polarity == 0) begin
+        cw_odd_input_wen = 0;
+        cww_odd_input_wen = 0;
+        pe_odd_input_wen = 0;
+        if (cwsi && cwri) begin
+            cw_even_input_wen = 1;
+        end
+        else begin
+            cw_even_input_wen = 0;
+        end
+
+        if (ccwsi && ccwri) begin
+            ccw_even_input_wen = 1;
+        end
+        else begin
+            ccw_even_input_wen = 0;
+        end
+
+        if (pesi && peri) begin
+            pe_even_input_wen = 1;
+        end
+        else begin
+            pe_even_input_wen = 0;
+        end
+    end
+    else begin
+        cw_even_input_wen = 0;
+        cww_even_input_wen = 0;
+        pe_even_input_wen = 0;
+        if (cwsi && cwri) begin
+            cw_odd_input_wen = 1;
+        end
+        else begin
+            cw_odd_input_wen = 0;
+        end
+
+        if (ccwsi && ccwri) begin
+            ccw_odd_input_wen = 1;
+        end
+        else begin
+            ccw_odd_input_wen = 0;
+        end
+
+        if (pesi && peri) begin
+            pe_odd_input_wen = 1;
+        end
+        else begin
+            pe_odd_input_wen = 0;
+        end
+    end
+end
+
+//---------------------------------------------------------------------------------
+//Input Buffer Read Enable, Full/Empty Status
+reg cw_even_input_ren;
+reg cw_odd_input_ren;
+reg cww_even_input_ren;
+reg cww_odd_input_ren;
+reg pe_even_input_ren;
+reg pe_odd_input_ren;
+
+
+wire cw_odd_input_empty;
+wire cw_even_input_empty;
+wire ccw_odd_input_empty;
+wire ccw_even_input_empty;
+wire pe_odd_input_empty;
+wire pe_even_input_empty;
+
+wire cw_odd_input_full;
+wire cw_even_input_full;
+wire ccw_odd_input_full;
+wire ccw_even_input_full;
+wire pe_odd_input_full;
+wire pe_even_input_full;
+
+
+//Input Buffer Instantiations
+buffer cw_odd_input (
+    .clk(clk),
+    .reset(reset),
+    .full(cw_odd_input_full),
+    .empty(cw_odd_input_empty),
+    .re(cw_odd_input_ren),
+    .we(cw_odd_input_wen),
+    .data_in(cwdi),
+    .data_out(cw_input_buffer_odd)
+);
+
+buffer cw_even_input (
+    .clk(clk),
+    .reset(reset),
+    .full(cw_even_input_full),
+    .empty(cw_even_input_empty),
+    .re(cw_even_input_ren),
+    .we(cw_even_input_wen),
+    .data_in(cwdi),
+    .data_out(cw_input_buffer_even)
+);
+
+buffer ccw_odd_input (
+    .clk(clk),
+    .reset(reset),
+    .full(ccw_odd_input_full),
+    .empty(ccw_odd_input_empty),
+    .re(ccw_odd_input_ren),
+    .we(ccw_odd_input_wen),
+    .data_in(ccwdi),
+    .data_out(ccw_input_buffer_odd)
+);
+
+buffer ccw_even_input (
+    .clk(clk),
+    .reset(reset),
+    .full(ccw_even_input_full),
+    .empty(ccw_even_input_empty),
+    .re(ccw_even_input_ren),
+    .we(ccw_even_input_wen),
+    .data_in(ccwdi),
+    .data_out(ccw_input_buffer_even)
+);
+
+buffer pe_odd_input (
+    .clk(clk),
+    .reset(reset),
+    .full(pe_odd_input_full),
+    .empty(pe_odd_input_empty),
+    .re(pe_odd_input_ren),
+    .we(pe_odd_input_wen),
+    .data_in(peddi),
+    .data_out(pe_input_buffer_odd)
+);
+
+buffer pe_even_input (
+    .clk(clk),
+    .reset(reset),
+    .full(pe_even_input_full),
+    .empty(pe_even_input_empty),
+    .re(pe_even_input_ren),
+    .we(pe_even_input_wen),
+    .data_in(peddi),
+    .data_out(pe_input_buffer_even)
+);
+
+//---------------------------------------------------------------------------------------------------------------------
+//Output Buffer Read Enables, and empty/full status
+reg cw_even_output_ren;
+reg cw_odd_output_ren;
+reg cww_even_output_ren;
+reg cww_odd_output_ren;
+reg pe_even_output_ren;
+reg pe_odd_output_ren;
+
+reg cw_even_output_wen;
+reg cw_odd_output_wen;
+reg cww_even_output_wen;
+reg cww_odd_output_wen;
+reg pe_even_output_wen;
+reg pe_odd_output_wen;
+
 wire cw_odd_output_empty;
-wire ccw_odd_output_empty;
-wire pe_odd_output_empty;
 wire cw_even_output_empty;
+wire ccw_odd_output_empty;
 wire ccw_even_output_empty;
+wire pe_odd_output_empty;
 wire pe_even_output_empty;
 
-//Input Buffer Write Enables
-assign wire cw_even_wen = cw_even_input_empty & ~polarity;
-assign wire cw_odd_wen = cwri & polarity;
-assign wire cww_even_wen = cwwri & ~polarity;
-assign wire cww_odd_wen = cwwri & polarity;
-assign wire pe_even_wen = peri & ~polarity;
-assign wire pe_odd_wen = peri & polarity;
+wire cw_odd_output_full;
+wire cw_even_output_full;
+wire ccw_odd_output_full;
+wire ccw_even_output_full;
+wire pe_odd_output_full;
+wire pe_even_output_full;
 
-//Output Buffer Write Enables
+buffer cw_odd_output (
+    .clk(clk),
+    .reset(reset),
+    .full(cw_odd_output_full),
+    .empty(cw_odd_output_empty),
+    .re(cw_odd_output_ren),
+    .we(cw_odd_output_wen),
+    .data_in(cwin_output_buffer_odd),
+    .data_out(cw_output_buffer_odd)
+);
 
-Read Enables
-//Input Buffer Instantiation
-	buffer cw_odd_in(clk, reset, cw_odd_wen, ,cwdi[63:0], cw_odd_input_empty, ~cw_odd_input_empty, cw_input_buffer_odd[63:0]); 
-	buffer cw_even_in(clk, reset, cw_eveb_wen, ,cwdi[63:0], ~cw_input_empty, cw_even_input_empty, cw_input_buffer_even[63:0]);
-	buffer ccw_odd_in(clk, reset, ccw_odd_wen, ,ccwdi[63:0], ccw_odd_input_empty, ~ccw_odd_input_empty, ccw_input_buffer_odd[63:0]);
-buffer ccw_even_in(clk, reset, ccw_even_wen, ,ccwdi[63:0], ~ccw_input_empty, ccw_input_empty, ccw_input_buffer_even[63:0]);
-	buffer pe_odd_in(clk, reset, pe_odd_wen, ,pedi[63:0], pe_odd_input_empty, ~pe_input_empty, pe_input_buffer_odd[63:0]);
-buffer pe_even_in(clk, reset, pe_odd_wen, ,pedi[63:0], ~pe_input_empty, pe_input_empty, pe_input_buffer_odd[63:0]);
+buffer cw_even_output (
+    .clk(clk),
+    .reset(reset),
+    .full(cw_even_output_full),
+    .empty(cw_even_output_empty),
+    .re(cw_even_output_ren),
+    .we(cw_even_output_wen),
+    .data_in(cwin_output_buffer_even),
+    .data_out(cw_output_buffer_even)
+);
 
-//Output Buffer Instantiation
-	arbitor_buffer cw_odd_out(clk, reset, cw_odd_wen, pe_od_wen , , ,cwdi[63:0], cw_input_empty, ~cw_input_empty, cw_input_buffer_odd[63:0]); 
-	arbitor_buffer cw_even_out(clk, reset, cw_even_wen, pe_even_wen , , ,cwdi[63:0], ~cw_input_empty, cw_input_empty, cw_input_buffer_even[63:0]);
-	arbitor_buffer ccw_odd_out(clk, reset, ccw_odd_wen, pe_od_wen , , ,ccwdi[63:0], ccw_input_empty, ~ccw_input_empty, ccw_input_buffer_odd[63:0]);
-	arbitor_buffer ccw_even_out(clk, reset, ccw_even_wen, pe_even_wen , , ,ccwdi[63:0], ~ccw_input_empty, ccw_input_empty, ccw_input_buffer_even[63:0]);
-	arbitor_buffer pe_odd_out(clk, reset, cw_odd_wen, ccw_odd_wen , , ,pedi[63:0], pe_input_empty, ~pe_input_empty, pe_input_buffer_odd[63:0]);
-	arbitor_buffer pe_even_out(clk, reset, cw_even_wen, ccw_even_wen , , ,pedi[63:0], ~pe_input_empty, pe_input_empty, pe_input_buffer_odd[63:0]);
+buffer ccw_odd_output (
+    .clk(clk),
+    .reset(reset),
+    .full(ccw_odd_output_full),
+    .empty(ccw_odd_output_empty),
+    .re(ccw_odd_output_ren),
+    .we(ccw_odd_output_wen),
+    .data_in(ccwin_output_buffer_odd),
+    .data_out(ccw_output_buffer_odd)
+);
 
-// Routing logic
-always @ (posedge clk or posedge reset) begin
-	if (reset) begin
-	cwdo = 0;
-	cwso = 0;
-	ccwdo = 0;
-	ccwso = 0;
-	pedo = 0;
-	
-      // Reset the router's state
-      //cw_requestor <= 2'b00;
-     // ccw_requestor <= 2'b00;
-    // pe_requestor <= 0;
-     // cw_granted <= 0;
-      //ccw_granted <= 0;
-     // pe_granted <= 0;
-     // cw_priority <= 2'b01;
-    //  ccw_priority <= 2'b01;
-     // pe_priority <= 1'b1; 
-	end 
-	else begin
-		if (cwdi[63:0] == 0) begin
-		cwri <= 1;
-		else if (ccwsi [63:0] == 0) begin
-      // Handle input requests and grant access
-      	
+buffer ccw_even_output (
+    .clk(clk),
+    .reset(reset),
+    .full(ccw_even_output_full),
+    .empty(ccw_even_output_empty),
+    .re(ccw_even_output_ren),
+    .we(ccw_even_output_wen),
+    .data_in(ccwin_output_buffer_even),
+    .data_out(ccw_output_buffer_even)
+);
 
-      // Handle output requests and grant access
-      // ...
-    end
-  end
+buffer pe_odd_output (
+    .clk(clk),
+    .reset(reset),
+    .full(pe_odd_output_full),
+    .empty(pe_odd_output_empty),
+    .re(pe_odd_output_ren),
+    .we(pe_odd_output_wen),
+    .data_in(pein_output_buffer_odd),
+    .data_out(pe_output_buffer_odd)
+);
 
-  // Additional logic for data forwarding, header updates, and polarity tracking
-  // ...
-//Input Ready Combinational Logic
+buffer pe_even_output (
+    .clk(clk),
+    .reset(reset),
+    .full(pe_even_output_full),
+    .empty(pe_even_output_empty),
+    .re(pe_even_output_ren),
+    .we(pe_even_output_wen),
+    .data_in(pein_output_buffer_even),
+    .data_out(pe_output_buffer_even)
+);
+//--------------------------------------------------------------------------------------------------------------------
+//Input Buffer --> Output Buffer Request Logic
+//If Input Buffer is full, Output Buffer is empty, and depending on the Hop value, whether the data continues to the 
+//next direction buffer or goes to processor buffer
+//If last bit of Hop value is 1, then data goes to directed buffer
+//If last bit of Hop value is 0, then data goes to processor buffer
+reg cwin_request_cwout_even;
+reg cwin_request_peout_even;
+reg ccwin_request_ccwo_even;
+reg ccwin_request_peout_even;
+reg pein_request_cwout_even;
+reg pein_request_ccwout_even;
+
+reg cwin_request_cwout_odd;
+reg cwin_request_peout_odd;
+reg ccwin_request_ccwo_odd;
+reg ccwin_request_peout_odd;
+reg pein_request_cwout_odd;
+reg pein_request_ccwout_odd;
+
 always @(*) begin
-end
-
-		
-always @(posedge clk) begin
-        if (reset) begin
-            mem <= 'b0;
-            flag <= 1'b0;
-//Clockwise Input Buffer
-if (cwsi && cwri) begin
-	
-	if (polarity) begin
-		cw_input_buffer_even[63:0] = cwdi[63:0]; end
+if (polarity) begin
+	if (cw_even_input_full && (cw_input_buffer_even[48]==1) && cw_even_output_empty ) begin //cw to cw
+	cwin_request_cwout_even = 1; end
 	else begin
-		cw_input_buffer_odd[63:0] = cwdi[63:0];
+	cwin_request_cwout_even = 0; end
+	
+	if (cw_even_input_full && (cw_input_buffer_even[48]==0) && pe_even_output_empty ) begin //cw to pe
+	cwin_request_peout_even = 1;end
+	else begin
+	cwin_request_peout_even = 0;end
+	
+	if (ccw_even_input_full && (ccw_input_buffer_even[48]==1) && ccw_even_output_empty ) begin //ccw to ccw
+	ccwin_request_cwout_even = 1; end
+	else begin
+	ccwin_request_cwout_even = 0; end
+	
+	if (ccw_even_input_full && (ccw_input_buffer_even[48]==0) && pe_even_output_empty ) begin //ccw to pe
+	ccwin_request_peout_even = 1;end
+	else begin
+	ccwin_request_peout_even = 0;end
+	
+	if (pe_even_input_full && (pe_input_buffer_even[48]==1) && cw_even_output_empty ) begin //pe to cw
+	pein_request_cwout_even = 1; end
+	else begin
+	pein_request_cwout_even = 0; end
+
+	if (pe_even_input_full && (pe_input_buffer_even[48]==0) && ccw_even_output_empty ) begin //pe to ccw
+	pein_request_ccwout_even = 1;end
+	else begin
+	pein_request_ccwout_evem = 0;end
+end
+else begin
+	if (cw_odd_input_full && (cw_input_buffer_odd[48] == 1) && cw_odd_output_empty ) begin // cw to cw
+    	cwin_request_cwout_odd = 1; end
+	else begin
+    	cwin_request_cwout_odd = 0; end
+
+	if (cw_odd_input_full && (cw_input_buffer_odd[48] == 0) && pe_odd_output_empty ) begin // cw to pe
+  	cwin_request_peout_odd = 1; end
+	else begin
+    	cwin_request_peout_odd = 0; end
+
+	if (ccw_odd_input_full && (ccw_input_buffer_odd[48] == 1) && ccw_odd_output_empty ) begin // ccw to ccw
+   	ccwin_request_cwout_odd = 1; end
+	else begin
+   	ccwin_request_cwout_odd = 0; end
+
+	if (ccw_odd_input_full && (ccw_input_buffer_odd[48] == 0) && pe_odd_output_empty ) begin // ccw to pe
+  	ccwin_request_peout_odd = 1; end
+	else begin
+    	ccwin_request_peout_odd = 0; end
+
+	if (pe_odd_input_full && (pe_input_buffer_odd[48] == 1) && cw_odd_output_empty ) begin // pe to cw
+    	pein_request_cwout_odd = 1; end
+	else begin
+    	pein_request_cwout_odd = 0; end
+
+	if (pe_odd_input_full && (pe_input_buffer_odd[48] == 0) && ccw_odd_output_empty ) begin // pe to ccw
+	pein_request_ccwout_odd = 1; end
+	else begin
+    	pein_request_ccwout_odd = 0; end
+end
+end
+//---------------------------------------------------------------------------------------------------------------------
+//Arbitor Instantiation: 6 Arbitors corresponding to 6 buffers
+wire cwin_grant_cwout_even;
+wire cwin_grant_peout_even;
+wire ccwin_grant_ccwo_even;
+wire ccwin_grant_peout_even;
+wire pein_grant_cwout_even;
+wire pein_grant_ccwout_even;
+
+wire cwin_grant_cwout_odd;
+wire cwin_grant_peout_odd;
+wire ccwin_grant_ccwo_odd;
+wire ccwin_grant_peout_odd;
+wire pein_grant_cwout_odd;
+wire pein_grant_ccwout_odd;
+
+arbitor cw_arbitor_even (
+    .clk(clk),
+    .reset(reset),
+    .rq0(cwin_request_cwout_even),
+    .rq1(cwin_request_peout_even),
+    .gt0(cwin_grant_cwout_even),
+    .gt1(cwin_grant_peout_even)
+);
+
+arbitor ccw_arbitor_even (
+    .clk(clk),
+    .reset(reset),
+    .rq0(ccwin_request_ccwout_even),
+    .rq1(ccwin_request_peout_even),
+    .gt0(ccwin_grant_ccwout_even),
+    .gt1(ccwin_grant_peout_even)
+);
+
+arbitor pe_arbitor_even(
+    .clk(clk),
+    .reset(reset),
+    .rq0(pein_request_cwout_even),
+    .rq1(pein_request_ccwout_even),
+    .gt0(pein_grant_cwout_even),
+    .gt1(pein_grant_ccwout_even)
+);
+
+arbitor cw_arbitor_odd (
+    .clk(clk),
+    .reset(reset),
+    .rq0(cwin_request_cwout_odd),
+    .rq1(cwin_request_peout_odd),
+    .gt0(cwin_grant_cwout_odd),
+    .gt1(cwin_grant_peout_odd)
+);
+
+arbitor ccw_arbitor_odd (
+    .clk(clk),
+    .reset(reset),
+    .rq0(ccwin_request_ccwout_odd),
+    .rq1(ccwin_request_peout_odd),
+    .gt0(ccwin_grant_ccwout_odd),
+    .gt1(ccwin_grant_peout_odd)
+);
+
+arbitor pe_arbitor_odd (
+    .clk(clk),
+    .reset(reset),
+    .rq0(pein_request_cwout_odd),
+    .rq1(pein_request_ccwout_odd),
+    .gt0(pein_grant_cwout_odd),
+    .gt1(pein_grant_ccwout_odd)
+);
+
+//--------------------------------------------------------------------------------------------------------------------
+//With Grant from arbitor, input buffer transfers data to output buffer
+
+
+reg cwin_output_buffer_even[63:0];
+reg ccwin_output_buffer_even[63:0];
+reg pein_output_buffer_even[63:0];
+reg cwin_output_buffer_odd[63:0];
+reg ccwin_output_buffer_odd[63:0];
+reg pein_output_buffer_odd[63:0];
+
+always @(*) begin
+
+	if (cwin_grant_cwout) begin
+	cw_even_input_ren = 1;
+	cw_even_output_wen = 1;
+	cwin_output_buffer_even[55:48] = cw_input_buffer_even[55:48] >> 1;
+	cwin_output_buffer_even[63:56] = cw_input_buffer_even[63:56];
+	cwin_output_buffer_even[47:0] = cw_input_buffer_even[47:0];end
+	else begin
+	cw_even_input_ren = 0;
+    	cw_even_output_wen = 0;
+	cwin_output_buffer_even = cwin_output_buffer_even;end
+		
+	if (cwin_grant_peout) begin
+	cw_even_input_ren = 1;
+	pe_even_output_wen = 1;
+	pein_output_buffer_even[55:48] = cw_input_buffer_even[55:48] >> 1;
+	pein_output_buffer_even[63:56] = cw_input_buffer_even[63:56];
+	pein_output_buffer_even[47:0] = cw_input_buffer_even[47:0];end
+	else begin
+	cw_even_input_ren = 0;
+    	pe_even_output_wen = 0;
+	pein_output_buffer_even = pein_output_buffer_even;end
+
+	if (ccwin_grant_ccwout) begin
+	ccw_even_input_ren = 1;
+	ccw_even_output_wen = 1;
+	ccwin_output_buffer_even[55:48] = ccw_input_buffer_even[55:48] >> 1;
+	ccwin_output_buffer_even[63:56] = ccw_input_buffer_even[63:56];
+	ccwin_output_buffer_even[47:0] = ccw_input_buffer_even[47:0];end
+	else begin
+	ccw_even_input_ren = 0;
+    	ccw_even_output_wen = 0;
+	ccwin_output_buffer_even = ccwin_output_buffer_even;end
+		
+	if (cwin_grant_peout) begin
+	cw_even_input_ren = 1;
+	pe_even_output_wen = 1;
+	pein_output_buffer_even[55:48] = ccw_input_buffer_even[55:48] >> 1;
+	pein_output_buffer_even[63:56] = ccw_input_buffer_even[63:56];
+	pein_output_buffer_even[47:0] = ccw_input_buffer_even[47:0];end
+	else begin
+	cw_even_input_ren = 0;
+    	pe_even_output_wen = 0;
+	cwin_output_buffer_even = cwin_output_buffer_even;end
+
+	if (pein_grant_cwout) begin
+	pe_even_input_ren = 1;
+	cw_even_output_wen = 1;
+	cwin_output_buffer_even[55:48] = pe_input_buffer_even[55:48] >> 1;
+	cwin_output_buffer_even[63:56] = pe_input_buffer_even[63:56];
+	cwin_output_buffer_even[47:0] = pe_input_buffer_even[47:0];end
+	else begin
+	pe_even_input_ren = 0;
+    	cw_even_output_wen = 0;
+	cwin_output_buffer_even = cwin_output_buffer_even;end
+		
+	if (pein_grant_ccwout) begin
+	pe_even_input_ren = 1;
+	ccw_even_output_wen = 1;
+	ccwin_output_buffer_even[55:48] = pe_input_buffer_even[55:48] >> 1;
+	ccwwin_output_buffer_even[63:56] = pe_input_buffer_even[63:56];
+	ccwin_output_buffer_even[47:0] = pe_input_buffer_even[47:0];end	
+	else begin
+	pe_even_input_ren = 0;
+    	ccw_even_output_wen = 0;
+	ccwin_output_buffer_even = ccwin_output_buffer_even;end
+
+	if (cwin_grant_cwout) begin
+    	cw_odd_input_ren = 1;
+    	cw_odd_output_wen = 1;
+    	cwin_output_buffer_odd[55:48] = cw_input_buffer_odd[55:48] >> 1	
+	cwin_output_buffer_odd[63:56] = cw_input_buffer_odd[63:56];
+    	cwin_output_buffer_odd[47:0] = cw_input_buffer_odd[47:0];end
+	else begin
+	cw_odd_input_ren = 0;
+    	cw_odd_output_wen = 0;
+	cwin_output_buffer_odd = cwin_output_buffer_odd;end
+	
+	end
+    	if (cwin_grant_peout) begin
+        cw_odd_input_ren = 1;
+        pe_odd_output_wen = 1;
+        pein_output_buffer_odd[55:48] = cw_input_buffer_odd[55:48] >> 1;
+        pein_output_buffer_odd[63:56] = cw_input_buffer_odd[63:56];
+        pein_output_buffer_odd[47:0] = cw_input_buffer_odd[47:0];
+    	end
+	else begin
+	cw_odd_input_ren = 0;
+    	pe_odd_output_wen = 0;
+	pein_output_buffer_odd = pein_output_buffer_odd;end
+
+    	if (ccwin_grant_ccwout) begin
+        ccw_odd_input_ren = 1;
+        ccw_odd_output_wen = 1;
+        ccwin_output_buffer_odd[55:48] = ccw_input_buffer_odd[55:48] >> 1;
+        ccwin_output_buffer_odd[63:56] = ccw_input_buffer_odd[63:56];
+        ccwin_output_buffer_odd[47:0] = ccw_input_buffer_odd[47:0];end
+	else begin
+	ccw_odd_input_ren = 0;
+    	ccw_odd_output_wen = 0;
+	ccwin_output_buffer_odd = ccwin_output_buffer_odd;end
+
+        if (ccwin_grant_peout) begin
+        ccw_odd_input_ren = 1;
+        pe_odd_output_wen = 1;
+        pein_output_buffer_odd[55:48] = ccw_input_buffer_odd[55:48] >> 1;
+        pein_output_buffer_odd[63:56] = ccw_input_buffer_odd[63:56];
+        pein_output_buffer_odd[47:0] = ccw_input_buffer_odd[47:0];
+        end
+	else begin
+	ccw_odd_input_ren = 0;
+    	pe_odd_output_wen = 0;
+	pein_output_buffer_odd = pein_output_buffer_odd;end
+
+        if (pein_grant_cwout) begin
+        pe_odd_input_ren = 1;
+        cw_odd_output_wen = 1;
+        cwin_output_buffer_odd[55:48] = pe_input_buffer_odd[55:48] >> 1;
+        cwin_output_buffer_odd[63:56] = pe_input_buffer_odd[63:56];
+        cwin_output_buffer_odd[47:0] = pe_input_buffer_odd[47:0];end
+	else begin
+	pe_odd_input_ren = 0;
+    	cw_odd_output_wen = 0;
+	cwin_output_buffer_odd = cwin_output_buffer_odd;end
+
+        if (pein_grant_ccwout) begin
+        pe_odd_input_ren = 1;
+        ccw_odd_output_wen = 1;
+        ccwin_output_buffer_odd[55:48] = pe_input_buffer_odd[55:48] >> 1;
+        ccwin_output_buffer_odd[63:56] = pe_input_buffer_odd[63:56];
+        ccwin_output_buffer_odd[47:0] = pe_input_buffer_odd[47:0];
+        end
+	else begin
+	pe_odd_input_ren = 0;
+    	ccw_odd_output_wen = 0;
+	ccwin_output_buffer_odd = ccwin_output_buffer_odd;end
+    end
+end
+
 
 end
-// Combinational Logic for Routing
-always @(*)
-
-	if (polarity) begin
-		if (cwsi && cwri) begin
-			
-//Clock-Wise Check
-
-
+//--------------------------------------------------------------------------------------------------------------------
   // Polarity 
-  always @ (posedge clk or posedge reset) begin
+  always @ (posedge clk) begin
     if (reset) begin
-	polarity <= 1'b0; end // Even cycle during reset
+polarity <= 1'b0;
+cwin_output_buffer_even[63:0] = 0
+ccwin_output_buffer_even[63:0] = 0
+pein_output_buffer_even[63:0] = 0
+cwin_output_buffer_odd[63:0] = 0
+ccwin_output_buffer_odd[63:0] = 0
+pein_output_buffer_odd[63:0] = 0
+cwin_request_cwout_even = 0
+cwin_request_peout_even = 0
+ccwin_request_ccwo_even = 0
+ccwin_request_peout_even = 0
+pein_request_cwout_even = 0
+pein_request_ccwout_even = 0
+cwin_request_cwout_odd = 0
+cwin_request_peout_odd = 0
+ccwin_request_ccwo_odd = 0
+ccwin_request_peout_odd = 0
+pein_request_cwout_odd = 0
+pein_request_ccwout_odd = 0
+cw_even_output_ren = 0
+cw_odd_output_ren = 0
+cww_even_output_ren = 0
+cww_odd_output_ren = 0
+pe_even_output_ren = 0
+pe_odd_output_ren = 0
+cw_even_output_wen = 0
+cw_odd_output_wen = 0
+cww_even_output_wen = 0
+cww_odd_output_wen = 0
+pe_even_output_wen = 0
+pe_odd_output_wen = 0
+cw_even_input_ren = 0
+cw_odd_input_ren = 0
+cww_even_input_ren = 0
+cww_odd_input_ren = 0
+pe_even_input_ren = 0
+pe_odd_input_ren = 0
+
+ end // Even cycle during reset
     else begin
 	polarity <= ~polarity; // Toggle the polarity
     end
   end
+
+
+
 endmodule
 
