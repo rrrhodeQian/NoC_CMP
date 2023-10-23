@@ -66,7 +66,7 @@ always @(*) begin
 		updated_pedi = {pedi[63],1'b0,pedi[61:0]}; //Automatically Clockwise regardless of original direction
 		dump_packet = 0;//No dump
 	end
-	else if ( pedi [55:48] == 0000_0111) begin//There are 3 hops
+	else if ( pedi [55:48] == 8'b0000_0111) begin//There are 3 hops
 		updated_pedi = {pedi[63],~pedi[62],pedi[61:51], 1'b0, 1'b0, pedi[48:0]}; //Change to opposite direction
 		//and set to 1 hop instead of 3 (updated_pedi bit [50:49] becomes 0
 		dump_packet = 0;
