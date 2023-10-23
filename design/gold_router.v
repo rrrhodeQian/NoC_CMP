@@ -530,6 +530,7 @@ arbitor pe_arbitor_odd (
 
 //--------------------------------------------------------------------------------------------------------------------
 //With Grant from arbitor, input buffer transfers data to output buffer
+//hop value decrements by 1, meaning successful hop from 
 always @(*) begin
 if (polarity) begin
 	if (cwin_grant_cwout_even) begin
@@ -579,9 +580,8 @@ if (polarity) begin
 	if (pein_grant_cwout_even) begin
 	pe_even_input_ren = 1;
 	cw_even_output_wen = 1;
-	cwin_output_buffer_even[55:48] = pe_input_buffer_even[55:48] >> 1;
-	cwin_output_buffer_even[63:56] = pe_input_buffer_even[63:56];
-	cwin_output_buffer_even[47:0] = pe_input_buffer_even[47:0];end
+	cwin_output_buffer_even[63:0] = pe_input_buffer_even[63:0];
+	end
 	else begin
 	pe_even_input_ren = 0;
     	cw_even_output_wen = 0;
@@ -590,9 +590,8 @@ if (polarity) begin
 	if (pein_grant_ccwout_even) begin
 	pe_even_input_ren = 1;
 	ccw_even_output_wen = 1;
-	ccwin_output_buffer_even[55:48] = pe_input_buffer_even[55:48] >> 1;
-	ccwin_output_buffer_even[63:56] = pe_input_buffer_even[63:56];
-	ccwin_output_buffer_even[47:0] = pe_input_buffer_even[47:0];end	
+	ccwin_output_buffer_even[63:0] = pe_input_buffer_even[63:0];
+	end	
 	else begin
 	pe_even_input_ren = 0;
     	ccw_even_output_wen = 0;
