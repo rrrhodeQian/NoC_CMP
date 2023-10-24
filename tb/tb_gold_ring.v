@@ -121,7 +121,7 @@ begin
 finish_send = 0;
 
 //Phase 0
-wait(!polarity && peri_node0)
+wait (!polarity && peri_node0)
 if (phase != phase0) begin
 pedi_vc_node0 = 0;
 pesi_node0 = 1;
