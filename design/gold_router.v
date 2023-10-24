@@ -434,12 +434,12 @@ always @(*) begin
 		else 
 			ccwin_request_peout_even = 0;
 		
-		if (pe_even_input_full && (pe_input_buffer_even[62]==1) && cw_even_output_empty ) //pe to cw
+		if (pe_even_input_full && (pe_input_buffer_even[62]==0) && cw_even_output_empty ) //pe to cw
 			pein_request_cwout_even = 1;
 		else
 			pein_request_cwout_even = 0;
 
-		if (pe_even_input_full && (pe_input_buffer_even[62]==0) && ccw_even_output_empty ) //pe to ccw
+		if (pe_even_input_full && (pe_input_buffer_even[62]==1) && ccw_even_output_empty ) //pe to ccw
 			pein_request_ccwout_even = 1;
 		else
 			pein_request_ccwout_even = 0;
@@ -471,12 +471,12 @@ always @(*) begin
 		else
 			ccwin_request_peout_odd = 0;
 
-		if (pe_odd_input_full && (pe_input_buffer_odd[62] == 1) && cw_odd_output_empty ) // pe to cw
+		if (pe_odd_input_full && (pe_input_buffer_odd[62] == 0) && cw_odd_output_empty ) // pe to cw
 			pein_request_cwout_odd = 1;
 		else
 			pein_request_cwout_odd = 0;
 
-		if (pe_odd_input_full && (pe_input_buffer_odd[62] == 0) && ccw_odd_output_empty ) // pe to ccw
+		if (pe_odd_input_full && (pe_input_buffer_odd[62] == 1) && ccw_odd_output_empty ) // pe to ccw
 			pein_request_ccwout_odd = 1;
 		else
 			pein_request_ccwout_odd = 0;
@@ -561,15 +561,11 @@ always @(*) begin
 		if (cwin_grant_cwout_even || cwin_grant_peout_even) begin//either cw even in -> out buffer or cw even in -> pe buffer request is granted
 			cw_even_input_ren = 1;
 			if (cwin_grant_cwout_even) begin
-				// cw_even_output_wen = 1;
-				// pe_even_output_wen = 0;//only one buffer can write, disable pe even buffer write in this senario
 				cwin_output_buffer_even[55:48] = cw_input_buffer_even[55:48] >> 1;
 				cwin_output_buffer_even[63:56] = cw_input_buffer_even[63:56];
 				cwin_output_buffer_even[47:0] = cw_input_buffer_even[47:0];
 			end
 			else begin
-				// pe_even_output_wen = 1;
-				// cw_even_output_wen = 0;
 				pein_output_buffer_even[55:48] = cw_input_buffer_even[55:48] >> 1;
 				pein_output_buffer_even[63:56] = cw_input_buffer_even[63:56];
 				pein_output_buffer_even[47:0] = cw_input_buffer_even[47:0];
@@ -577,21 +573,16 @@ always @(*) begin
 		end
 		else begin
 			cw_even_input_ren = 0;
-			// cw_even_output_wen = 0;	
-			// pe_even_output_wen = 0;
 		end
 
 		if (ccwin_grant_ccwout_even || ccwin_grant_peout_even) begin
 			ccw_even_input_ren = 1;
 			if (ccwin_grant_ccwout_even) begin
-				// ccw_even_output_wen = 1;
-				// pe_even_output_wen = 0;
 				ccwin_output_buffer_even[55:48] = ccw_input_buffer_even[55:48] >> 1;
 				ccwin_output_buffer_even[63:56] = ccw_input_buffer_even[63:56];
 				ccwin_output_buffer_even[47:0] = ccw_input_buffer_even[47:0];
 			end
 			else begin
-				// pe_even_output_wen = 1;
 				pein_output_buffer_even[55:48] = ccw_input_buffer_even[55:48] >> 1;
 				pein_output_buffer_even[63:56] = ccw_input_buffer_even[63:56];
 				pein_output_buffer_even[47:0] = ccw_input_buffer_even[47:0];
@@ -599,8 +590,6 @@ always @(*) begin
 		end
 		else begin
 			ccw_even_input_ren = 0;
-			// ccw_even_output_wen = 0;
-			// ccwin_output_buffer_even = ccwin_output_buffer_even;
 		end
 
 		if (pein_grant_cwout_even || pein_grant_ccwout_even) begin
@@ -610,7 +599,6 @@ always @(*) begin
 				cwin_output_buffer_even[63:56] = pe_input_buffer_even[63:56];
 				cwin_output_buffer_even[47:0] = pe_input_buffer_even[47:0];
 			end
-			// cw_even_output_wen = 1;
 			else begin
 				ccwin_output_buffer_even[55:48] = pe_input_buffer_even[55:48] >> 1;
 				ccwin_output_buffer_even[63:56] = pe_input_buffer_even[63:56];
@@ -619,8 +607,6 @@ always @(*) begin
 		end
 		else begin
 			pe_even_input_ren = 0;
-			// cw_even_output_wen = 0;
-			// cwin_output_buffer_even = cwin_output_buffer_even;
 		end
 	end
 
@@ -632,7 +618,6 @@ always @(*) begin
 				cwin_output_buffer_odd[63:56] = cw_input_buffer_odd[63:56];
 				cwin_output_buffer_odd[47:0] = cw_input_buffer_odd[47:0];
 			end
-			// cw_odd_output_wen = 1;
 			else begin
 				pein_output_buffer_odd[55:48] = cw_input_buffer_odd[55:48] >> 1;
 				pein_output_buffer_odd[63:56] = cw_input_buffer_odd[63:56];
@@ -641,8 +626,6 @@ always @(*) begin
 		end
 		else begin
 			cw_odd_input_ren = 0;
-			// cw_odd_output_wen = 0;
-			// cwin_output_buffer_odd = cwin_output_buffer_odd;
 		end
 
 		if (ccwin_grant_ccwout_odd || ccwin_grant_peout_odd) begin
@@ -652,7 +635,6 @@ always @(*) begin
 				ccwin_output_buffer_odd[63:56] = ccw_input_buffer_odd[63:56];
 				ccwin_output_buffer_odd[47:0] = ccw_input_buffer_odd[47:0];
 			end
-			// ccw_odd_output_wen = 1;
 			else begin
 				pein_output_buffer_odd[55:48] = ccw_input_buffer_odd[55:48] >> 1;
 				pein_output_buffer_odd[63:56] = ccw_input_buffer_odd[63:56];
@@ -661,8 +643,6 @@ always @(*) begin
 		end
 		else begin
 			ccw_odd_input_ren = 0;
-			// ccw_odd_output_wen = 0;
-			// ccwin_output_buffer_odd = ccwin_output_buffer_odd;
 		end
 
 		if (pein_grant_cwout_odd || pein_grant_ccwout_odd) begin
@@ -672,7 +652,6 @@ always @(*) begin
 				cwin_output_buffer_odd[63:56] = pe_input_buffer_odd[63:56];
 				cwin_output_buffer_odd[47:0] = pe_input_buffer_odd[47:0];
 			end
-			// cw_odd_output_wen = 1;
 			else begin
 				ccwin_output_buffer_odd[55:48] = pe_input_buffer_odd[55:48] >> 1;
 				ccwin_output_buffer_odd[63:56] = pe_input_buffer_odd[63:56];
@@ -681,8 +660,6 @@ always @(*) begin
 		end
 		else begin
 			pe_odd_input_ren = 0;
-			ccw_odd_output_wen = 0;
-			// ccwin_output_buffer_odd = ccwin_output_buffer_odd;
 		end
 	end
 
@@ -804,14 +781,14 @@ end
 //Finally, Output Buffer --> Data Out, Ready to be sent
 always @(*) begin
 	if (polarity == 0) begin
-		cwdo = cwin_output_buffer_even[63:0];
-		ccwdo = ccwin_output_buffer_even[63:0];
-		pedo = pein_output_buffer_even[63:0];
+		cwdo = cw_output_buffer_even[63:0];
+		ccwdo = ccw_output_buffer_even[63:0];
+		pedo = pe_output_buffer_even[63:0];
 	end
 	else begin
-		cwdo = cwin_output_buffer_odd[63:0];
-		ccwdo = ccwin_output_buffer_odd[63:0];
-		pedo = pein_output_buffer_odd[63:0];
+		cwdo = cw_output_buffer_odd[63:0];
+		ccwdo = ccw_output_buffer_odd[63:0];
+		pedo = pe_output_buffer_odd[63:0];
 	end
 end
 endmodule
