@@ -123,8 +123,8 @@ finish_send = 0;
 //Even Polarity: Node 0 and 1 inject
 //Odd Polarity: Node 2 and 3 inject
 //Node 0
-forever begin
-if (!polarity && peri_node0 && (phase != phase0)) begin
+wait(!polarity && peri_node0)
+if (phase != phase0) begin
 pedi_vc_node0 = 0;
 pesi_node0 = 1;
 pedi_source_node0=0;
@@ -153,7 +153,8 @@ pesi_node0 = 0;
 end
 
 //Node 1
-if (!polarity && peri_node1 && (phase != phase1)) begin
+wait(!polarity && peri_node1)
+if (phase != phase1) begin
 pedi_vc_node1 = 0;
 pesi_node1 = 1;
 pedi_source_node1=1;
@@ -182,8 +183,8 @@ pesi_node1 = 0;
 end
 
 //Node 2
-//wait(!polarity && peri_node2)
-if (polarity && peri_node2 && (phase != phase2)) begin
+wait(polarity && peri_node2)
+if (phase != phase2) begin
 pedi_vc_node2 = 0;
 pesi_node2 = 1;
 pedi_source_node2=2;
@@ -212,8 +213,8 @@ pesi_node2 = 0;
 end
 
 //Node 3
-//wait()
-if (polarity && peri_node3 && phase != phase3) begin
+wait(polarity && peri_node3)
+if (phase != phase3) begin
 pedi_vc_node3 = 0;
 pesi_node3 = 1;
 pedi_source_node3=3;
@@ -237,14 +238,12 @@ pedi_hop_node3 = 8'b0000_0001;
 pedi_payload_node3 = 2;
 end
 endcase
-#4
+
 pesi_node3 = 0;
 end
-else begin
-break;
+
 finish_send = 1;
-end
-end
+
 end
 endtask
 
