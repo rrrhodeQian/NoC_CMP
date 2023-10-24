@@ -2,46 +2,44 @@ clockwise data flow, hop = 1
 At time  12 ns, polarity = 0, cwdi = 0000000000000000, cwdo = 0000000000000000
 At time  16 ns, polarity = 0, cwdi = 8001000012153524, cwdo = 0000000000000000
 At time  20 ns, polarity = 1, cwdi = 0001ffffc0895e81, cwdo = 0000000000000000
-At time  24 ns, polarity = 0, cwdi = 8001ffff8484d609, cwdo = 0000000000000000
-At time  28 ns, polarity = 1, cwdi = 0001ffffb1f05663, cwdo = 8000000012153524
-At time  32 ns, polarity = 0, cwdi = 8001000006b97b0d, cwdo = 0000ffffc0895e81
-At time  36 ns, polarity = 1, cwdi = 0001000046df998d, cwdo = 8000ffff8484d609
-At time  40 ns, polarity = 0, cwdi = 8001ffffb2c28465, cwdo = 0000ffffb1f05663
-At time  44 ns, polarity = 1, cwdi = 0001ffff89375212, cwdo = 8000000006b97b0d
-At time  48 ns, polarity = 0, cwdi = 8001000000f3e301, cwdo = 0000000046df998d
+At time  24 ns, polarity = 0, cwdi = 8001ffff8484d609, cwdo = 8000000012153524
+At time  28 ns, polarity = 1, cwdi = 0001ffffb1f05663, cwdo = 0000ffffc0895e81
+At time  32 ns, polarity = 0, cwdi = 8001000006b97b0d, cwdo = 8000ffff8484d609
+At time  36 ns, polarity = 1, cwdi = 0001000046df998d, cwdo = 0000ffffb1f05663
+At time  40 ns, polarity = 0, cwdi = 8001ffffb2c28465, cwdo = 8000000006b97b0d
+At time  44 ns, polarity = 1, cwdi = 0001ffff89375212, cwdo = 0000000046df998d
+At time  48 ns, polarity = 0, cwdi = 8001000000f3e301, cwdo = 8000ffffb2c28465
 counter-clockwise data flow, hop = 2
 At time  64 ns, polarity = 0, ccwdi = 0000000000000000, ccwdo = 0000000000000000
 At time  68 ns, polarity = 1, ccwdi = c00300003b23f176, ccwdo = 0000000000000000
 At time  72 ns, polarity = 0, ccwdi = 400300001e8dcd3d, ccwdo = 0000000000000000
-At time  76 ns, polarity = 1, ccwdi = c003000076d457ed, ccwdo = 0000000000000000
-At time  80 ns, polarity = 0, ccwdi = 40030000462df78c, ccwdo = c00100003b23f176
-At time  84 ns, polarity = 1, ccwdi = c00300007cfde9f9, ccwdo = 400100001e8dcd3d
-At time  88 ns, polarity = 0, ccwdi = 4003ffffe33724c6, ccwdo = c001000076d457ed
-At time  92 ns, polarity = 1, ccwdi = c003ffffe2f784c5, ccwdo = 40010000462df78c
-At time  96 ns, polarity = 0, ccwdi = 4003ffffd513d2aa, ccwdo = c00100007cfde9f9
-At time 100 ns, polarity = 1, ccwdi = c003000072aff7e5, ccwdo = 4001ffffe33724c6
+At time  76 ns, polarity = 1, ccwdi = c003000076d457ed, ccwdo = c00100003b23f176
+At time  80 ns, polarity = 0, ccwdi = 40030000462df78c, ccwdo = 400100001e8dcd3d
+At time  84 ns, polarity = 1, ccwdi = c00300007cfde9f9, ccwdo = c001000076d457ed
+At time  88 ns, polarity = 0, ccwdi = 4003ffffe33724c6, ccwdo = 40010000462df78c
+At time  92 ns, polarity = 1, ccwdi = c003ffffe2f784c5, ccwdo = c00100007cfde9f9
+At time  96 ns, polarity = 0, ccwdi = 4003ffffd513d2aa, ccwdo = 4001ffffe33724c6
+At time 100 ns, polarity = 1, ccwdi = c003000072aff7e5, ccwdo = c001ffffe2f784c5
 counter-clockwise data flow, hop = 0
 At time 116 ns, polarity = 1, ccwdi = 4003ffffbbd27277, pedo = 0000000000000000
 At time 120 ns, polarity = 0, ccwdi = c000ffff8932d612, pedo = 0000000000000000
 At time 124 ns, polarity = 1, ccwdi = 4000000047ecdb8f, pedo = 0000000000000000
-At time 128 ns, polarity = 0, ccwdi = c0000000793069f2, pedo = 0000000000000000
-At time 132 ns, polarity = 1, ccwdi = 4000ffffe77696ce, pedo = c000ffff8932d612
-At time 136 ns, polarity = 0, ccwdi = c000fffff4007ae8, pedo = 4000000047ecdb8f
-At time 140 ns, polarity = 1, ccwdi = 4000ffffe2ca4ec5, pedo = c0000000793069f2
-At time 144 ns, polarity = 0, ccwdi = c00000002e58495c, pedo = 4000ffffe77696ce
-At time 148 ns, polarity = 1, ccwdi = 4000ffffde8e28bd, pedo = c000fffff4007ae8
-At time 152 ns, polarity = 0, ccwdi = c000ffff96ab582d, pedo = 4000ffffe2ca4ec5
+At time 128 ns, polarity = 0, ccwdi = c0000000793069f2, pedo = c000ffff8932d612
+At time 132 ns, polarity = 1, ccwdi = 4000ffffe77696ce, pedo = 4000000047ecdb8f
+At time 136 ns, polarity = 0, ccwdi = c000fffff4007ae8, pedo = c0000000793069f2
+At time 140 ns, polarity = 1, ccwdi = 4000ffffe2ca4ec5, pedo = 4000ffffe77696ce
+At time 144 ns, polarity = 0, ccwdi = c00000002e58495c, pedo = c000fffff4007ae8
+At time 148 ns, polarity = 1, ccwdi = 4000ffffde8e28bd, pedo = 4000ffffe2ca4ec5
+At time 152 ns, polarity = 0, ccwdi = c000ffff96ab582d, pedo = c00000002e58495c
 data from pe, hop = 1
 At time 168 ns, polarity = 0, pedi = 0000000000000000, cwdo = 0000000006d7cd0d, ccwdo = 4001ffffbbd27277
 At time 172 ns, polarity = 1, pedi = 4001ffffb1ef6263, cwdo = 0000000006d7cd0d, ccwdo = 4001ffffbbd27277
 At time 176 ns, polarity = 0, pedi = 000100000573870a, cwdo = 0000000006d7cd0d, ccwdo = 4001ffffbbd27277
-At time 180 ns, polarity = 1, pedi = 4001ffffc03b2280, cwdo = 0000000006d7cd0d, ccwdo = 4001ffffbbd27277
-At time 184 ns, polarity = 0, pedi = 0001000010642120, cwdo = 0000000006d7cd0d, ccwdo = 4000ffffb1ef6263
-At time 188 ns, polarity = 1, pedi = 40010000557845aa, cwdo = 000000000573870a, ccwdo = 4001ffffbbd27277
-At time 192 ns, polarity = 0, pedi = 0001ffffcecccc9d, cwdo = 0000000006d7cd0d, ccwdo = 4000ffffc03b2280
-At time 196 ns, polarity = 1, pedi = 4001ffffcb203e96, cwdo = 0000000010642120, ccwdo = 4001ffffbbd27277
-At time 200 ns, polarity = 0, pedi = 0001ffff8983b813, cwdo = 0000000006d7cd0d, ccwdo = 40000000557845aa
-At time 204 ns, polarity = 1, pedi = 4001ffff86bc380d, cwdo = 0000ffffcecccc9d, ccwdo = 4001ffffbbd27277
+At time 180 ns, polarity = 1, pedi = 4001ffffc03b2280, cwdo = 0000000006d7cd0d, ccwdo = 4000ffffb1ef6263
+At time 184 ns, polarity = 0, pedi = 0001000010642120, cwdo = 000000000573870a, ccwdo = 4001ffffbbd27277
+At time 188 ns, polarity = 1, pedi = 40010000557845aa, cwdo = 0000000006d7cd0d, ccwdo = 4000ffffc03b2280
+At time 192 ns, polarity = 0, pedi = 0001ffffcecccc9d, cwdo = 0000000010642120, ccwdo = 4001ffffbbd27277
+At time 196 ns, polarity = 1, pedi = 4001ffffcb203e96, cwdo = 0000000006d7cd0d, ccwdo = 40000000557845aa
+At time 200 ns, polarity = 0, pedi = 0001ffff8983b813, cwdo = 0000ffffcecccc9d, ccwdo = 4001ffffbbd27277
+At time 204 ns, polarity = 1, pedi = 4001ffff86bc380d, cwdo = 0000000006d7cd0d, ccwdo = 4000ffffcb203e96
 data congestion test
-At time 224 ns, polarity = 0, pedi = 0001000000000000, cwdi = 0001ffffeaa62ad5, ccwdi = 4000ffffb2a72665, cwdo = 0000ffffa9a7d653, ccwdo = 4000ffff86bc380d, pedo = 4000ffffb2a72665
-At time 232 ns, polarity = 0, pedi = 0001000000000000, cwdi = 0001ffffeaa62ad5, ccwdi = 4000ffffb2a72665, cwdo = 0000ffffa9a7d653, ccwdo = 4000ffff86bc380d, pedo = 4000ffffb2a72665

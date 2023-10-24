@@ -114,16 +114,16 @@ module tb_gold_router;
         cwdi <= 'b0;
         $fdisplay(fd, "data congestion test");
         // for(i = 0; i < 10; i = i + 1) begin
-            pedi[62] <= 0;
-            pedi[55:48] <= 8'b0000_0001;
-            pedi[47:0] = $random;
+            ccwdi[62] <= 0;
+            ccwdi[55:48] <= 8'b0000_0000;
+            ccwdi[47:0] = $random;
             cwdi[62] <= 0;
-            cwdi[55:48] <= 8'b0000_0001;
+            cwdi[55:48] <= 8'b0000_0000;
             cwdi[47:0] <= $random;
             #(CLK_PERIOD);
-            $fdisplay(fd, "At time %3d ns, polarity = %b, pedi = %h, cwdi = %h, ccwdi = %h, cwdo = %h, ccwdo = %h, pedo = %h", $time, polarity, pedi, cwdi, ccwdi, cwdo, ccwdo, pedo);
+            // $fdisplay(fd, "At time %3d ns, polarity = %b, pedi = %h, cwdi = %h, ccwdi = %h, cwdo = %h, ccwdo = %h, pedo = %h", $time, polarity, pedi, cwdi, ccwdi, cwdo, ccwdo, pedo);
             #(CLK_PERIOD*2);
-            $fdisplay(fd, "At time %3d ns, polarity = %b, pedi = %h, cwdi = %h, ccwdi = %h, cwdo = %h, ccwdo = %h, pedo = %h", $time, polarity, pedi, cwdi, ccwdi, cwdo, ccwdo, pedo);
+            // $fdisplay(fd, "At time %3d ns, polarity = %b, pedi = %h, cwdi = %h, ccwdi = %h, cwdo = %h, ccwdo = %h, pedo = %h", $time, polarity, pedi, cwdi, ccwdi, cwdo, ccwdo, pedo);
         // end
 
         #(CLK_PERIOD*3);

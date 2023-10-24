@@ -780,15 +780,15 @@ end
 //--------------------------------------------------------------------------------------------------------------------
 //Finally, Output Buffer --> Data Out, Ready to be sent
 always @(*) begin
-	if (polarity == 0) begin
-		cwdo = cw_output_buffer_even[63:0];
-		ccwdo = ccw_output_buffer_even[63:0];
-		pedo = pe_output_buffer_even[63:0];
+	if (polarity) begin
+		cwdo = cw_output_buffer_even;
+		ccwdo = ccw_output_buffer_even;
+		pedo = pe_output_buffer_even;
 	end
 	else begin
-		cwdo = cw_output_buffer_odd[63:0];
-		ccwdo = ccw_output_buffer_odd[63:0];
-		pedo = pe_output_buffer_odd[63:0];
+		cwdo = cw_output_buffer_odd;
+		ccwdo = ccw_output_buffer_odd;
+		pedo = pe_output_buffer_odd;
 	end
 end
 endmodule
