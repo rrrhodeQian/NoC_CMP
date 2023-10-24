@@ -1,0 +1,14 @@
+At time   0 ns, polarity = 0, cwdi = 0000000000000000, ccwdo = xxxxxxxxxxxxxxxx
+At time  12 ns, polarity = 0, cwdi = 8001000012153524, ccwdo = xxxxxxxxxxxxxxxx
+At time  16 ns, polarity = 1, cwdi = 0001ffffc0895e81, ccwdo = xxxxxxxxxxxxxxxx
+At time  20 ns, polarity = 0, cwdi = 8001ffff8484d609, ccwdo = xxxxxxxxxxxxxxxx
+At time  24 ns, polarity = 1, cwdi = 0001ffffb1f05663, ccwdo = xxxxxxxxxxxxxxxx
+At time  28 ns, polarity = 0, cwdi = 8001000006b97b0d, ccwdo = xxxxxxxxxxxxxxxx
+At time  32 ns, polarity = 1, cwdi = 0001000046df998d, ccwdo = xxxxxxxxxxxxxxxx
+At time  36 ns, polarity = 0, cwdi = 8001ffffb2c28465, ccwdo = xxxxxxxxxxxxxxxx
+At time  40 ns, polarity = 1, cwdi = 0001ffff89375212, ccwdo = xxxxxxxxxxxxxxxx
+At time  44 ns, polarity = 0, cwdi = 8001000000f3e301, ccwdo = xxxxxxxxxxxxxxxx
+At time  48 ns, polarity = 1, cwdi = 0001000006d7cd0d, ccwdo = xxxxxxxxxxxxxxxx
+At time  52 ns, polarity = 0, cwdi = 0001000006d7cd0d, ccwdo = xxxxxxxxxxxxxxxx
+At time  56 ns, polarity = 1, cwdi = 0001000006d7cd0d, ccwdo = xxxxxxxxxxxxxxxx
+At time  60 ns, polarity = 0, cwdi = 0001000006d7cd0d, ccwdo = xxxxxxxxxxxxxxxx

@@ -41,12 +41,12 @@
 
 
 # top level module
-TOP = tb_arbiter
+TOP = tb_gold_router
 TOP_SYN = tb_syn
-DESIGN_NAME = arbiter
+DESIGN_NAME = gold_router
 
 # List of the design files
-DESIGN_FILES = ./design/arbiter.v
+DESIGN_FILES = ./design/*.v
 NETLIST_FILES = ./netlist/*.v
 
 # List of the testbench files
