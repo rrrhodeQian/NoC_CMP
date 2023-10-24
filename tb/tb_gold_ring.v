@@ -141,7 +141,7 @@ pedi_payload_node0 = 2;
 end
 
 phase3: begin
-pedi_dir_node0 = 0;//To see if Minimal Router functions
+pedi_dir_node0 = 0;//To see if Minimal Routing functions
 pedi_hop_node0 = 8'b0000_0111;
 pedi_payload_node0 = 3;
 end
