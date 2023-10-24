@@ -118,11 +118,13 @@ task packet_send;
 input [1:0] phase;
 output finish_send;
 begin
-finish_send = 0;
 
-//Phase 0
-wait (!polarity && peri_node0)
-if (phase != phase0) begin
+finish_send = 0;
+//Even Polarity: Node 0 and 1 inject
+//Odd Polarity: Node 2 and 3 inject
+//Node 0
+forever begin
+if (!polarity && peri_node0 && (phase != phase0)) begin
 pedi_vc_node0 = 0;
 pesi_node0 = 1;
 pedi_source_node0=0;
@@ -141,7 +143,7 @@ pedi_payload_node0 = 2;
 end
 
 phase3: begin
-pedi_dir_node0 = 0;//To see if Minimal Routing functions
+pedi_dir_node0 = 0;//To see if Minimal Router functions
 pedi_hop_node0 = 8'b0000_0111;
 pedi_payload_node0 = 3;
 end
@@ -150,9 +152,8 @@ endcase
 pesi_node0 = 0;
 end
 
-//Phase 1
-wait(!polarity && peri_node1)
-if (phase != phase1) begin
+//Node 1
+if (!polarity && peri_node1 && (phase != phase1)) begin
 pedi_vc_node1 = 0;
 pesi_node1 = 1;
 pedi_source_node1=1;
@@ -180,9 +181,9 @@ endcase
 pesi_node1 = 0;
 end
 
-//Phase 2
-wait(!polarity && peri_node2)
-if (phase != phase2) begin
+//Node 2
+//wait(!polarity && peri_node2)
+if (polarity && peri_node2 && (phase != phase2)) begin
 pedi_vc_node2 = 0;
 pesi_node2 = 1;
 pedi_source_node2=2;
@@ -210,9 +211,9 @@ endcase
 pesi_node2 = 0;
 end
 
-//Phase 3
-wait(!polarity && peri_node3)
-if (phase != phase3) begin
+//Node 3
+//wait()
+if (polarity && peri_node3 && phase != phase3) begin
 pedi_vc_node3 = 0;
 pesi_node3 = 1;
 pedi_source_node3=3;
@@ -239,8 +240,11 @@ endcase
 #4
 pesi_node3 = 0;
 end
-
+else begin
+break;
 finish_send = 1;
+end
+end
 end
 endtask
 
