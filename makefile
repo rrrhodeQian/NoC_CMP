@@ -41,9 +41,9 @@
 
 
 # top level module
-TOP = tb_gold_router
+TOP = tb_register_file
 TOP_SYN = tb_syn
-DESIGN_NAME = gold_router
+DESIGN_NAME = register_file
 
 # List of the design files
 DESIGN_FILES = ./design/*.v

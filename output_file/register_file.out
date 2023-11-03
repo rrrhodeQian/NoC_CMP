@@ -1,0 +1,26 @@
+RF writing test
+At time  16 ns, data_in = c0895e8112153524, wr_addr =  9, PPP_sel = 000, mem_array[ 9] = c0895e8112153524
+At time  20 ns, data_in = 06b97b0db1f05663, wr_addr = 13, PPP_sel = 000, mem_array[13] = 06b97b0db1f05663
+At time  24 ns, data_in = 89375212b2c28465, wr_addr =  1, PPP_sel = 001, mem_array[ 1] = 8937521200000000
+At time  28 ns, data_in = 3b23f17606d7cd0d, wr_addr = 29, PPP_sel = 010, mem_array[29] = 0000000006d7cd0d
+At time  32 ns, data_in = 462df78c76d457ed, wr_addr = 25, PPP_sel = 011, mem_array[25] = 4600f70076005700
+At time  36 ns, data_in = e2f784c5e33724c6, wr_addr = 10, PPP_sel = 100, mem_array[10] = 00f700c5003700c6
+At time  40 ns, data_in = bbd2727772aff7e5, wr_addr = 18, PPP_sel = 101, mem_array[18] = 0000000000000000
+At time  44 ns, data_in = 793069f247ecdb8f, wr_addr = 14, PPP_sel = 110, mem_array[14] = 0000000000000000
+At time  48 ns, data_in = e2ca4ec5f4007ae8, wr_addr = 28, PPP_sel = 111, mem_array[28] = 0000000000000000
+RF 0 write test
+At time  52 ns, data_in = 96ab582dde8e28bd, wr_addr =  0, PPP_sel = 000, mem_array[ 0] = 0000000000000000
+RF reading test
+At time  56 ns, data_in = b1ef6263b2a72665, wr_addr =  1, PPP_sel = 000, mem_array[ 1] = b1ef6263b2a72665
+At time  60 ns, data_in = c03b22800573870a, wr_addr =  2, PPP_sel = 000, mem_array[ 2] = c03b22800573870a
+At time  64 ns, data_in = 557845aa10642120, wr_addr =  3, PPP_sel = 000, mem_array[ 3] = 557845aa10642120
+At time  68 ns, data_in = cb203e96cecccc9d, wr_addr =  4, PPP_sel = 000, mem_array[ 4] = cb203e96cecccc9d
+At time  76 ns, rd_addr_0 =  1, rd_addr_1 =  1, data_out_0 = 0000000000000000, data_out_1 = 0000000000000000
+At time  80 ns, rd_addr_0 =  2, rd_addr_1 =  2, data_out_0 = 0000000000000000, data_out_1 = 0000000000000000
+At time  84 ns, rd_addr_0 =  3, rd_addr_1 =  3, data_out_0 = 0000000000000000, data_out_1 = 0000000000000000
+At time  88 ns, rd_addr_0 =  4, rd_addr_1 =  4, data_out_0 = 0000000000000000, data_out_1 = 0000000000000000
+Internal forwarding test
+At time 100 ns, data_in = 86bc380d8983b813, rd_addr_0 =  1, rd_addr_1 =  1, wr_addr =  1, PPP_sel = 001, data_out_0 = 86bc380d00000000, data_out_1 = 86bc380d00000000
+At time 104 ns, data_in = 359fdd6ba9a7d653, rd_addr_0 =  2, rd_addr_1 =  2, wr_addr =  2, PPP_sel = 010, data_out_0 = 86bc380da9a7d653, data_out_1 = 86bc380da9a7d653
+At time 108 ns, data_in = 81174a02eaa62ad5, rd_addr_0 =  3, rd_addr_1 =  3, wr_addr =  3, PPP_sel = 011, data_out_0 = 81bc4a0deaa72a53, data_out_1 = 81bc4a0deaa72a53
+At time 112 ns, data_in = 0effe91dd7563eae, rd_addr_0 =  4, rd_addr_1 =  4, wr_addr =  4, PPP_sel = 100, data_out_0 = 81ff4a1dea562aae, data_out_1 = 81ff4a1dea562aae
