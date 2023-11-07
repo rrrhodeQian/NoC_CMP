@@ -1,0 +1,67 @@
+ADD: ALU_in_0 = ffffffffffffffff, ALU_in_1 = 0000000000000001, WW = 00, ALU_out = ffffffffffffff00
+ADD: ALU_in_0 = ffffffffffffffff, ALU_in_1 = 0000000000000001, WW = 01, ALU_out = ffffffffffff0000
+ADD: ALU_in_0 = ffffffffffffffff, ALU_in_1 = 0000000000000001, WW = 10, ALU_out = ffffffff00000000
+ADD: ALU_in_0 = ffffffffffffffff, ALU_in_1 = 0000000000000001, WW = 11, ALU_out = 0000000000000000
+
+SUB: ALU_in_0 = 0000000000000000, ALU_in_1 = 0000000000000001, WW = 00, ALU_out = 00000000000000ff
+SUB: ALU_in_0 = 0000000000000000, ALU_in_1 = 0000000000000001, WW = 01, ALU_out = 000000000000ffff
+SUB: ALU_in_0 = 0000000000000000, ALU_in_1 = 0000000000000001, WW = 10, ALU_out = 00000000ffffffff
+SUB: ALU_in_0 = 0000000000000000, ALU_in_1 = 0000000000000001, WW = 11, ALU_out = ffffffffffffffff
+
+AND: ALU_in_0 = f0f0f0f0f0f0f0f0, ALU_in_1 = ffffffffffffffff, WW = 00, ALU_out = f0f0f0f0f0f0f0f0
+OR: ALU_in_0 = f0f0f0f0f0f0f0f0, ALU_in_1 = 0000000000000000, WW = 01, ALU_out = f0f0f0f0f0f0f0f0
+XOR: ALU_in_0 = 0000000000000000, ALU_in_1 = ffffffffffffffff, WW = 10, ALU_out = ffffffffffffffff
+NOT: ALU_in_0 = 0000000000000000, ALU_in_1 = ffffffffffffffff, WW = 11, ALU_out = ffffffffffffffff
+MOV: ALU_in_0 = 123456789abcdef0, ALU_in_1 = ffffffffffffffff, WW = 11, ALU_out = 123456789abcdef0
+
+MULEU: ALU_in_0 = 0102030405060708, ALU_in_1 = 0102030405060708, WW = 00, ALU_out = 0001000900190031
+MULEU: ALU_in_0 = 0102030405060708, ALU_in_1 = 0102030405060708, WW = 01, ALU_out = 0001040400193c24
+MULEU: ALU_in_0 = 0102030405060708, ALU_in_1 = 0102030405060708, WW = 10, ALU_out = 0001040a14191810
+
+MULOU: ALU_in_0 = 0102030405060708, ALU_in_1 = 0102030405060708, WW = 00, ALU_out = 0004001000240040
+MULOU: ALU_in_0 = 0102030405060708, ALU_in_1 = 0102030405060708, WW = 01, ALU_out = 0009181000317040
+MULOU: ALU_in_0 = 0102030405060708, ALU_in_1 = 0102030405060708, WW = 10, ALU_out = 00193c6aa4917040
+
+SQEU: ALU_in_0 = 0102030405060708, ALU_in_1 = 0102030405060708, WW = 00, ALU_out = 0001000900190031
+SQEU: ALU_in_0 = 0102030405060708, ALU_in_1 = 0102030405060708, WW = 01, ALU_out = 0001040400193c24
+SQEU: ALU_in_0 = 0102030405060708, ALU_in_1 = 0102030405060708, WW = 10, ALU_out = 0001040a14191810
+
+SQOU: ALU_in_0 = 0102030405060708, ALU_in_1 = 0102030405060708, WW = 00, ALU_out = 0004001000240040
+SQOU: ALU_in_0 = 0102030405060708, ALU_in_1 = 0102030405060708, WW = 01, ALU_out = 0009181000317040
+SQOU: ALU_in_0 = 0102030405060708, ALU_in_1 = 0102030405060708, WW = 10, ALU_out = 00193c6aa4917040
+
+DIV: ALU_in_0 = a5a5a5a5a5a5a5a5, ALU_in_1 = 9999999999999999, WW = 00, ALU_out = 0101010101010101
+DIV: ALU_in_0 = ffffffffffffffff, ALU_in_1 = 0202020202020202, WW = 01, ALU_out = 007f007f007f007f
+DIV: ALU_in_0 = ffffffffffffffff, ALU_in_1 = 0202020202020202, WW = 10, ALU_out = 0000007f0000007f
+DIV: ALU_in_0 = ffffffffffffffff, ALU_in_1 = 0202020202020202, WW = 11, ALU_out = 000000000000007f
+
+MOD: ALU_in_0 = ffffffffffffffff, ALU_in_1 = 0202020202020202, WW = 00, ALU_out = 0101010101010101
+MOD: ALU_in_0 = ffffffffffffffff, ALU_in_1 = 0202020202020202, WW = 01, ALU_out = 0101010101010101
+MOD: ALU_in_0 = ffffffffffffffff, ALU_in_1 = 0202020202020202, WW = 10, ALU_out = 0101010101010101
+MOD: ALU_in_0 = ffffffffffffffff, ALU_in_1 = 0202020202020202, WW = 11, ALU_out = 0101010101010101
+
+SQRT: ALU_in_0 = 4040404040404040, ALU_in_1 = xxxxxxxxxxxxxxxx, WW = 00, ALU_out = 0808080808080808
+SQRT: ALU_in_0 = 4000400040004000, ALU_in_1 = xxxxxxxxxxxxxxxx, WW = 01, ALU_out = 0080008000800080
+SQRT: ALU_in_0 = 4000000040000000, ALU_in_1 = xxxxxxxxxxxxxxxx, WW = 10, ALU_out = 0000800000008000
+SQRT: ALU_in_0 = 4000000000000000, ALU_in_1 = xxxxxxxxxxxxxxxx, WW = 11, ALU_out = 0000000080000000
+
+SLL: ALU_in_0 = ffffffffffffffff, ALU_in_1 = f4f4f4f4f4f4f4f4, WW = 00, ALU_out = f0f0f0f0f0f0f0f0, 
+SLL: ALU_in_0 = ffffffffffffffff, ALU_in_1 = f8f8f8f8f8f8f8f8, WW = 01, ALU_out = ff00ff00ff00ff00, 
+SLL: ALU_in_0 = ffffffffffffffff, ALU_in_1 = f0f0f0f0f0f0f0f0, WW = 10, ALU_out = ffff0000ffff0000, 
+SLL: ALU_in_0 = ffffffffffffffff, ALU_in_1 = 0000000000000020, WW = 11, ALU_out = ffffffff00000000, 
+
+SRL: ALU_in_0 = ffffffffffffffff, ALU_in_1 = f4f4f4f4f4f4f4f4, WW = 00, ALU_out = 0f0f0f0f0f0f0f0f, 
+SRL: ALU_in_0 = ffffffffffffffff, ALU_in_1 = f8f8f8f8f8f8f8f8, WW = 01, ALU_out = 00ff00ff00ff00ff, 
+SRL: ALU_in_0 = ffffffffffffffff, ALU_in_1 = f0f0f0f0f0f0f0f0, WW = 10, ALU_out = 0000ffff0000ffff, 
+SRL: ALU_in_0 = ffffffffffffffff, ALU_in_1 = e0e0e0e0e0e0e0e0, WW = 11, ALU_out = 00000000ffffffff, 
+
+SRA: ALU_in_0 = 8080808080808080, ALU_in_1 = f4f4f4f4f4f4f4f4, WW = 00, ALU_out = f8f8f8f8f8f8f8f8, 
+SRA: ALU_in_0 = 8080808080808080, ALU_in_1 = f8f8f8f8f8f8f8f8, WW = 01, ALU_out = ff80ff80ff80ff80, 
+SRA: ALU_in_0 = 8080808080808080, ALU_in_1 = f0f0f0f0f0f0f0f0, WW = 10, ALU_out = ffff8080ffff8080, 
+SRA: ALU_in_0 = 8080808080808080, ALU_in_1 = e0e0e0e0e0e0e0e0, WW = 11, ALU_out = ffffffff80808080, 
+
+RTTH: ALU_in_0 = 0001020304050607, ALU_in_1 = xxxxxxxxxxxxxxxx, WW = 00, ALU_out = 0010203040506070
+RTTH: ALU_in_0 = 0001020304050607, ALU_in_1 = xxxxxxxxxxxxxxxx, WW = 01, ALU_out = 0100030205040706
+RTTH: ALU_in_0 = 0001020304050607, ALU_in_1 = xxxxxxxxxxxxxxxx, WW = 10, ALU_out = 0203000106070405
+RTTH: ALU_in_0 = 0001020304050607, ALU_in_1 = xxxxxxxxxxxxxxxx, WW = 11, ALU_out = 0405060700010203
+

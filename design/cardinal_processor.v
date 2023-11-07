@@ -41,7 +41,7 @@ module cardinal_processor (
     //signals generated in ID stage
     reg beq;//raw branch if equal signal
     reg bneq;//raw branch if not equal signal
-    reg branch_q;//qulified branch signal
+    wire branch_q;//qulified branch signal
     reg stall;//stall signal
     reg reg_write_ID;//register write signal
     reg rB_rD_sel;//select signal for reading address rB or rD, 0 means rB
@@ -72,6 +72,7 @@ module cardinal_processor (
     wire [0:1] WW_EXM;
     wire [0:5] func_EXM;
     wire [0:DATA_WIDTH-1] load_data;//data to be loaded in EXM_WB stage register after mux
+    wire reg_write_EXM;
     wire L_local_external_EXM;
 
     //signals generated in WB stage
@@ -99,17 +100,18 @@ module cardinal_processor (
     );
 
     //ALU instantiation
-    ALU alu1(
+    alu alu1(
         .ALU_in_0(ALU_in_0),
         .ALU_in_1(ALU_in_1),
-        .ww(WW_EXM),
-        .func_code(func_EXM)
+        .WW(WW_EXM),
+        .func_code(func_EXM),
         .ALU_out(ALU_out)
     );
 
+    assign inst_addr = PC;
     //control logic in ID stage
     assign flush_ID = ~IF_ID_reg[32];
-    assign imme_addr = {16{0}, IF_ID_reg[16:31]};//0 append immediate address from instruction[16:31]
+    assign imme_addr = {16'b0, IF_ID_reg[16:31]};//0 append immediate address from instruction[16:31]
     assign nic_addr_ID = imme_addr[30:31];//address for nic registers
     assign branch_q = ((beq && (reg_file_dout_0 == 64'b0)) || (bneq && (reg_file_dout_0 != 64'b0))) ? 1'b1 : 1'b0;//assert branch qualified if beq and (rD) == 0 or bneq and (rD) != 0
     assign reg_data = reg_file_dout_1;
@@ -133,6 +135,7 @@ module cardinal_processor (
     assign nic_addr = ID_EXM_reg[154:155];
     assign nicEn = ID_EXM_reg[156];
     assign nicWrEn = ID_EXM_reg[157];
+    assign reg_write_EXM = ID_EXM_reg[158];
     assign L_local_external_EXM = ID_EXM_reg[159];
     assign load_data = (!L_local_external_EXM) ? dmem_data : nic_data;
     assign R_L_mode_EXM = ID_EXM_reg[160];
@@ -150,7 +153,7 @@ module cardinal_processor (
     always @(*) begin
         //Harzard Detection Unit
         //if there's a store inst in ID stage, R type/load inst in EXM stage, source ID = destination ID    OR    there's a branch inst in ID stage and R type/load inst in EXM stage, two sources ID = destination ID
-        if (store && reg_write_EXM && (rD_EXM == rD_ID)) || (branch_q && reg_write_EXM && ((rD_EXM == rA_ID) || (rD_EXM == rB_ID)))
+        if ((store && reg_write_EXM && (rD_EXM == rD_ID)) || (branch_q && reg_write_EXM && ((rD_EXM == rA_ID) || (rD_EXM == rB_ID))))
             stall = 1'b1;
         else
             stall = 1'b0;
@@ -195,7 +198,7 @@ module cardinal_processor (
                 store = 1'b0;
             end
             else begin
-                case (opcode_ID)
+                case (IF_ID_reg[0:5])
                     R_ALU: begin
                         reg_write_ID = 1'b1;
                         nicEn_ID = 1'b0;

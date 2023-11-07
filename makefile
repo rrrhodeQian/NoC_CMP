@@ -41,9 +41,9 @@
 
 
 # top level module
-TOP = tb_register_file
+TOP = tb_cardinal_processor
 TOP_SYN = tb_syn
-DESIGN_NAME = register_file
+DESIGN_NAME = cardinal_processor
 
 # List of the design files
 DESIGN_FILES = ./design/*.v
