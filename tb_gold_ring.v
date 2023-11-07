@@ -157,7 +157,7 @@ pedi_payload_node1 = 1;
 #4
 pedi_dir_node2 = 0;
 pedi_hop_node2 = 8'b0000_0011;
-pedi_payload_node2 = $random;
+pedi_payload_node2 = 0;
 pedi_dir_node3 = 0;
 pedi_hop_node3 = 8'b0000_0001;
 pedi_payload_node3 = 0;
@@ -234,14 +234,7 @@ end
 
 endcase
 
-#4
-pesi_node0 = 0;
 
-pesi_node2 = 0;
-
-pesi_node1 = 0;
-
-pesi_node3 = 0;
 
 end
 endtask
@@ -250,16 +243,16 @@ endtask
 always @(posedge clk) begin
 if (reset == 0) begin
 if (peso_node0)
-$fdisplay(gather0, "Phase=%d , Time=%d , Destination=%d , Source=%d , Packet Value=%b", 0, time_keep, pedo_vc_node0, pedo_payload_node0, pedo_source_node0, pedo_node0);
+$fdisplay(gather0, "Phase=%d , Time=%d , Destination=%b , Source=%b , Packet Value=%b", 0, time_keep, pedo_vc_node0,  pedo_source_node0, pedo_node0);
 
 if (peso_node1) 
-$fdisplay(gather1, "Phase=%d , Time=%d , Destination=%d , Source=%d , Packet Value=%b", 1, time_keep, pedo_vc_node1, pedo_payload_node1, pedo_source_node1, pedo_node1);
+$fdisplay(gather1, "Phase=%d , Time=%d , Destination=%b , Source=%b , Packet Value=%b", 1, time_keep, pedo_vc_node1,  pedo_source_node1, pedo_node1);
 
 if (peso_node2) 
-$fdisplay(gather2, "Phase=%d , Time=%d , Destination=%d , Source=%d , Packet Value=%b", 2, time_keep, pedo_vc_node2, pedo_payload_node2, pedo_source_node2, pedo_node2);
+$fdisplay(gather2, "Phase=%d , Time=%d , Destination=%b , Source=%b , Packet Value=%b", 2, time_keep, pedo_vc_node2,  pedo_source_node2, pedo_node2);
 
 if (peso_node3) 
-$fdisplay(gather3, "Phase=%d , Time=%d , Destination=%d , Source=%d , Packet Value=%b", 3, time_keep, pedo_vc_node3, pedo_payload_node3, pedo_source_node3, pedo_node3);
+$fdisplay(gather3, "Phase=%d , Time=%d , Destination=%b , Source=%b , Packet Value=%b", 3, time_keep, pedo_vc_node3,  pedo_source_node3, pedo_node3);
 
 end
 end
@@ -305,7 +298,7 @@ for (test_number = 0; test_number < 8; test_number = test_number + 1) begin
 	
 end
 
-#3200
+#320
 
 $fclose(gather0);
 $fclose(gather1);
