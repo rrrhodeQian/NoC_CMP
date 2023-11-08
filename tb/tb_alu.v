@@ -366,8 +366,8 @@ module tb_alu;
 
 //-----------------------------------------------------------------------------------------------------------------------
 // SRL:
-        ALU_in_1 = 64'hf4_f4_f4_f4_f4_f4_f4_f4; // shift 4 bits
-        ALU_in_0 = 64'hff_ff_ff_ff_ff_ff_ff_ff;
+        ALU_in_1 = 64'h5555555555555555; // shift 2 bits
+        ALU_in_0 = 64'h9696969696969696;
         func_code = VSRL;
         WW = b_mode;
         #1 
@@ -387,8 +387,8 @@ module tb_alu;
         #1 
         $fdisplay(fd, "SRL: ALU_in_0 = %h, ALU_in_1 = %h, WW = %b, ALU_out = %h, ", ALU_in_0, ALU_in_1, WW, ALU_out); 
 
-        ALU_in_1 = 64'he0_e0_e0_e0_e0_e0_e0_e0; // shift 32 bits
-        ALU_in_0 = 64'hff_ff_ff_ff_ff_ff_ff_ff;
+        ALU_in_1 = 64'h7777777777777777; // shift 32 bits
+        ALU_in_0 = 64'hD2D2D2D2D2D2D2D2;
         func_code = VSRL;
         WW = d_mode;
         #1 
@@ -396,7 +396,7 @@ module tb_alu;
 
 //-----------------------------------------------------------------------------------------------------------------------
 // SRA:
-        ALU_in_1 = 64'hf4_f4_f4_f4_f4_f4_f4_f4; // shift 4 bits
+        ALU_in_1 = 64'hf6_f6_f6_f6_f6_f6_f6_f6; // shift 2 bits
         ALU_in_0 = 64'h80_80_80_80_80_80_80_80;
         func_code = VSRA;
         WW = b_mode;

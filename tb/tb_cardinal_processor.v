@@ -51,14 +51,14 @@ module tb_cardinal_processor;
     localparam CLK_PERIOD = 4;
     always #(CLK_PERIOD/2) clk=~clk;
 
-    integer fd1, fd2, fd3, fd4, count;
+    integer fd1, count;
 
     initial begin
-        fd1 = $fopen("./output_file/RF_content_1.out", "w");
-        fd2 = $fopen("./output_file/dmem_content_1.out", "w");
-
+        //Test with all provided imem.fill files and compare with expected_dmem.dump
+        //To change which imem.fill to be read, change the file name, as well as the dmem_content.out name
+        fd1 = $fopen("./output_file/dmem_content_40.out", "w");
         $readmemh("./test_cases/dmem.fill", dm0.MEM);
-        $readmemh("./test_cases/imem_1.fill", im0.MEM);
+        $readmemh("./test_cases/imem_40.fill", im0.MEM);
 
         clk <= 1'b0;
         reset <= 1'b1;
@@ -68,41 +68,70 @@ module tb_cardinal_processor;
 
         wait (inst_in == 0);
         repeat (8) #(CLK_PERIOD);
-    
-        for(count = 1; count < 32; count = count + 1)
-            $fdisplay(fd1, "%1d: %h", count, dut.RF.mem_array[count]);
 
-        for(count = 0; count < 256; count = count + 1)
-            $fdisplay(fd2, "Memory location # %4d : %h", count, dm0.MEM[count]);
+        for(count = 0; count < 128; count = count + 1)
+            $fdisplay(fd1, "Memory location # %4d : %h", count, dm0.MEM[count]);
+//---------------------------------------------------------------------------------------
+//         #(CLK_PERIOD*4);
+//         reset <= 1'b1;
 
-        // #(CLK_PERIOD*4);
-        // reset <= 1'b1;
+//         fd[1] = $fopen("./output_file/dmem_content_2.out", "w");
+//         $readmemh("./test_cases/dmem.fill", dm0.MEM);
+//         $readmemh("./test_cases/imem_2.fill", im0.MEM);
 
-        // #(CLK_PERIOD*3);
-        // reset <= 1'b0;
+//         #(CLK_PERIOD*3);
+//         reset <= 1'b0;
         
-        // fd3 = $fopen("./output_file/RF_content_2.out", "w");
-        // fd4 = $fopen("./output_file/dmem_content_2.out", "w");
-        // $readmemh("./test_cases/dmem.fill", dm0.MEM);
-        // $readmemh("./test_cases/imem_40.fill", im0.MEM);
-
-        // wait (inst_in == 0);
-        // repeat (8) #(CLK_PERIOD);
+//         wait (inst_in == 0);
+//         repeat (8) #(CLK_PERIOD);
     
-        // for(count = 1; count < 32; count = count + 1)
-        //     $fdisplay(fd3, "%1d: %h", count, dut.RF.mem_array[count]);
+//         // for(count = 1; count < 32; count = count + 1)
+//         //     $fdisplay(fd3, "%1d: %h", count, dut.RF.mem_array[count]);
 
-        // for(count = 0; count < 256; count = count + 1)
-        //     $fdisplay(fd4, "Memory location # %4d : %h", count, dm0.MEM[count]);
+//         for(count = 0; count < 32; count = count + 1)
+//             $fdisplay(fd[1], "Memory location # %4d : %h", count, dm0.MEM[count]);
+// //---------------------------------------------------------------------------------------
+//         #(CLK_PERIOD*4);
+//         reset <= 1'b1;
 
-        $fclose(fd1 | fd2 /*| fd3 | fd4*/);
+//         fd[2] = $fopen("./output_file/dmem_content_3.out", "w");
+//         $readmemh("./test_cases/dmem.fill", dm0.MEM);
+//         $readmemh("./test_cases/imem_3.fill", im0.MEM);
+
+//         #(CLK_PERIOD*3);
+//         reset <= 1'b0;
+        
+//         wait (inst_in == 0);
+//         repeat (8) #(CLK_PERIOD);
+
+//         for(count = 0; count < 256; count = count + 1)
+//             $fdisplay(fd[2], "Memory location # %4d : %h", count, dm0.MEM[count]);
+// //---------------------------------------------------------------------------------------
+//         #(CLK_PERIOD*4);
+//         reset <= 1'b1;
+
+//         fd[3] = $fopen("./output_file/dmem_content_4.out", "w");
+//         $readmemh("./test_cases/dmem.fill", dm0.MEM);
+//         $readmemh("./test_cases/imem_4.fill", im0.MEM);
+
+//         #(CLK_PERIOD*3);
+//         reset <= 1'b0;
+        
+//         wait (inst_in == 0);
+//         repeat (8) #(CLK_PERIOD);
+
+//         for(count = 0; count < 256; count = count + 1)
+//             $fdisplay(fd[3], "Memory location # %4d : %h", count, dm0.MEM[count]);
+
+        $fclose(fd1);
         $finish;
     end
 
     initial
     begin
-        #1000000;
-        $fclose(fd1 | fd2 /*| fd3 | fd4*/);
+        //watchdog timer
+        #100000;
+        $fclose(fd1);
         $finish;
     end  
 endmodule

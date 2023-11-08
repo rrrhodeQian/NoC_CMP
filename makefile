@@ -42,8 +42,10 @@
 
 # top level module
 TOP = tb_cardinal_processor
+# TOP = tb_alu
 TOP_SYN = tb_syn
 DESIGN_NAME = cardinal_processor
+# DESIGN_NAME = alu
 
 # List of the design files
 DESIGN_FILES = ./design/*.v

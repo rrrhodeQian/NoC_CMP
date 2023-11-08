@@ -26,7 +26,7 @@ module register_file (
     always @(*) begin
         //if read address equals to write address, internally forwarding
         if (wen) begin
-            if (wr_addr == rd_addr_0) begin
+            if (wr_addr == rd_addr_0 && wr_addr != 5'b0) begin
                 case (PPP_sel)
                     mode_a: data_out_0 = data_in;
                     mode_u: data_out_0[0:31] = data_in[0:31];
@@ -49,7 +49,7 @@ module register_file (
             else
                 data_out_0 = mem_array[rd_addr_0];//if write address does not match read address, put data in the register file to data output port
 
-            if (wr_addr == rd_addr_1) begin
+            if (wr_addr == rd_addr_1 && wr_addr != 5'b0) begin
                 case (PPP_sel)
                     mode_a: data_out_1 = data_in;
                     mode_u: data_out_1[0:31] = data_in[0:31];

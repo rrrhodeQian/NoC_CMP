@@ -113,7 +113,7 @@ module cardinal_processor (
     assign flush_ID = ~IF_ID_reg[32];
     assign imme_addr = {16'b0, IF_ID_reg[16:31]};//0 append immediate address from instruction[16:31]
     assign nic_addr_ID = imme_addr[30:31];//address for nic registers
-    assign branch_q = ((beq && (reg_file_dout_0 == 64'b0)) || (bneq && (reg_file_dout_0 != 64'b0))) ? 1'b1 : 1'b0;//assert branch qualified if beq and (rD) == 0 or bneq and (rD) != 0
+    assign branch_q = ((beq && (reg_file_dout_1 == 64'b0)) || (bneq && (reg_file_dout_1 != 64'b0))) ? 1'b1 : 1'b0;//assert branch qualified if beq and (rD) == 0 or bneq and (rD) != 0
     assign reg_data = reg_file_dout_1;
     assign d_out = reg_file_dout_1;
     assign dmem_addr = imme_addr;
@@ -159,12 +159,12 @@ module cardinal_processor (
             stall = 1'b0;
 
         //Forwarding Unit
-        if (reg_write_WB && (rA_EXM == rD_WB))
+        if (reg_write_WB && (rA_EXM == rD_WB) && (rD_WB != 5'b0))
             fw_rA_sel = 1'b1;
         else
             fw_rA_sel = 1'b0;
         
-        if (reg_write_WB && (rB_EXM == rD_WB))
+        if (reg_write_WB && (rB_EXM == rD_WB) && (rD_WB != 5'b0))
             fw_rB_sel = 1'b1;
         else
             fw_rB_sel = 1'b0;
