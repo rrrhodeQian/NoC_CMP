@@ -84,7 +84,24 @@ assign pedo_payload_node3[31:0] = pedo_node3[31:0];
 //assign pedo_node2 = {pedo_vc_node2, pedo_dir_node2, pe_reserve, pedo_hop_node2, pedo_source_node2, pedo_payload_node2};
 //assign pedo_node3 = {pedo_vc_node3, pedo_dir_node3, pe_reserve, pedo_hop_node3, pedo_source_node3, pedo_payload_node3};
 //------------------------------------------------------------------------------------------
-//Open files for gather phases and start-end-time 
+
+//Log Dump Files
+always @(posedge clk)
+if (reset == 0) begin
+if (dump_packet_node0)
+$fdisplay(dump_file, "Phase=%d , Time=%d , Destination=%b , Source=%b , Packet Value=%b", 0, time_keep, pedo_vc_node0,  pedo_source_node0, pedo_node0);
+
+if (peso_node1) 
+$fdisplay(gather1, "Phase=%d , Time=%d , Destination=%b , Source=%b , Packet Value=%b", 1, time_keep, pedo_vc_node1,  pedo_source_node1, pedo_node1);
+
+if (peso_node2) 
+$fdisplay(gather2, "Phase=%d , Time=%d , Destination=%b , Source=%b , Packet Value=%b", 2, time_keep, pedo_vc_node2,  pedo_source_node2, pedo_node2);
+
+if (peso_node3) 
+$fdisplay(gather3, "Phase=%d , Time=%d , Destination=%b , Source=%b , Packet Value=%b", 3, time_keep, pedo_vc_node3,  pedo_source_node3, pedo_node3);
+
+end
+end
 
 //------------------------------------------------------------------------------------------
 // Instantiate Gold_Ring
@@ -92,6 +109,15 @@ gold_ring ring(
 .clk(clk),
 .reset(reset),
 .polarity(polarity),
+/*Dump Packet Signal and Data*/
+.dump_data_node0(dump_data_node0),
+.dump_data_node1(dump_data_node1),
+.dump_data_node2(dump_data_node2),
+.dump_data_node3(dump_data_node3),
+.dump_packet_node0(dump_packet_node0),
+.dump_packet_node1(dump_packet_node1),
+.dump_packet_node2(dump_packet_node2),
+.dump_packet_node3(dump_packet_node3),
 // Node 0
 .peri_node0(peri_node0),
 .pesi_node0(pesi_node0),
@@ -242,17 +268,17 @@ endtask
 //-------------------------------------------------------------------------------------------------------------------------
 always @(posedge clk) begin
 if (reset == 0) begin
-if (peso_node0)
-$fdisplay(gather0, "Phase=%d , Time=%d , Destination=%b , Source=%b , Packet Value=%b", 0, time_keep, pedo_vc_node0,  pedo_source_node0, pedo_node0);
+if (dump_packet_node0)
+$fdisplay(dump_file, "Phase=%d , Time=%d , Errorneous Hop Value=%b , Source=%b , Packet Value=%b", 0, time_keep, pedo_vc_node0,  pedo_source_node0, dump_data_node0);
 
-if (peso_node1) 
-$fdisplay(gather1, "Phase=%d , Time=%d , Destination=%b , Source=%b , Packet Value=%b", 1, time_keep, pedo_vc_node1,  pedo_source_node1, pedo_node1);
+if (dump_packet_node1) 
+$fdisplay(dump_file, "Phase=%d , Time=%d , Errorneous Hop Value=%b , Source=%b , Packet Value=%b", 1, time_keep, pedo_vc_node1,  pedo_source_node1, dump_data_node1);
 
-if (peso_node2) 
-$fdisplay(gather2, "Phase=%d , Time=%d , Destination=%b , Source=%b , Packet Value=%b", 2, time_keep, pedo_vc_node2,  pedo_source_node2, pedo_node2);
+if (dump_packet_node2) 
+$fdisplay(dump_file, "Phase=%d , Time=%d , Errorneous Hop Value=%b , Source=%b , Packet Value=%b", 2, time_keep, pedo_vc_node2,  pedo_source_node2,dump_data_node2);
 
-if (peso_node3) 
-$fdisplay(gather3, "Phase=%d , Time=%d , Destination=%b , Source=%b , Packet Value=%b", 3, time_keep, pedo_vc_node3,  pedo_source_node3, pedo_node3);
+if (dump_packet_node3) 
+$fdisplay(dump_file, "Phase=%d , Time=%d , Errorneous Hop Value=%b , Source=%b , Packet Value=%b", 3, time_keep, pedo_vc_node3,  pedo_source_node3, dump_data_node3);
 
 end
 end
@@ -271,6 +297,7 @@ gather1 = $fopen("gather_phase1.out", "w");
 gather2 = $fopen("gather_phase2.out", "w");
 gather3 = $fopen("gather_phase3.out", "w");
 start_end_time = $fopen("start_end_time.out", "w");
+dump_file = $fopen("dump_file.out", "w");
 clk = 1;
 reset = 1;
 pesi_node0 = 0;

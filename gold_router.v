@@ -50,7 +50,7 @@ input wire pero
 //Minimal Routing Logic: Only for pe packets as they are just introduced into the ring
 //Also with a Basic Hop Count fault check(dump_packet)
 reg [63:0] updated_pedi;
-reg dump_packet;
+output reg dump_packet;
 
 always @(*) begin
 	if (pedi [55:48] == 8'b0000_0001) begin//Only One Hop 
@@ -69,6 +69,14 @@ always @(*) begin
 	else begin //All other conditions means packet contains fault
 		dump_packet = 1;//Dump the packet
 	end
+end
+
+output reg [63:0] dump_data;
+always @(*) begin
+  if (dump_packet) begin
+  dump_data = pedi;
+
+  end
 end
 //------------------------------------------------------------------------------------------------------------------------
 //Input Buffer Read Enable, Full/Empty Status
