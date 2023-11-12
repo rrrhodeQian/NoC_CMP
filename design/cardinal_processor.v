@@ -152,8 +152,8 @@ module cardinal_processor (
 
     always @(*) begin
         //Harzard Detection Unit
-        //if there's a store inst in ID stage, R type/load inst in EXM stage, source ID = destination ID    OR    there's a branch inst in ID stage and R type/load inst in EXM stage, two sources ID = destination ID
-        if ((store && reg_write_EXM && (rD_EXM == rD_ID)) || (branch_q && reg_write_EXM && ((rD_EXM == rA_ID) || (rD_EXM == rB_ID))))
+        //if there's a store inst in ID stage, R type/load inst in EXM stage, source ID = destination ID    OR    there's a branch inst in ID stage and R type/load inst in EXM stage, source ID = destination ID
+        if ((store && reg_write_EXM && (rD_EXM == rD_ID)) || ((beq || bneq) && reg_write_EXM && (rD_ID == rD_EXM) && (rD_EXM != 5'b0)))
             stall = 1'b1;
         else
             stall = 1'b0;

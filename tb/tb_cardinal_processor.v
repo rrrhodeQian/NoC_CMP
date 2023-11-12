@@ -51,79 +51,45 @@ module tb_cardinal_processor;
     localparam CLK_PERIOD = 4;
     always #(CLK_PERIOD/2) clk=~clk;
 
-    integer fd1, count;
+    integer fd1, fd2, count, i;
+    time start_time, end_time;
+    real run_time, throughput;
+
 
     initial begin
         //Test with all provided imem.fill files and compare with expected_dmem.dump
         //To change which imem.fill to be read, change the file name, as well as the dmem_content.out name
-        fd1 = $fopen("./output_file/dmem_content_40.out", "w");
+        fd1 = $fopen("./output_file/dmem_content_41.out", "w");
+        fd2 = $fopen("./output_file/forwarding_help.out", "w");
         $readmemh("./test_cases/dmem.fill", dm0.MEM);
-        $readmemh("./test_cases/imem_40.fill", im0.MEM);
+        $readmemh("./test_cases/imem_41.fill", im0.MEM);
+        $fmonitor(fd2, "At time %3d ns, fw_rA_sel = %b, fw_rB_sel = %b, ALU_in_0 = %h, ALU_in_1 = %h, data_WB = %h, ID_EXM_reg[5:68] = %h, ID_EXM_reg[69:132] = %h", $time, dut.fw_rA_sel, dut.fw_rB_sel, dut.ALU_in_0, dut.ALU_in_1, dut.data_WB, dut.ID_EXM_reg[5:68], dut.ID_EXM_reg[69:132]);
+
+        i = 0;
+        while (im0.MEM[i] != 'h0) begin
+            i = i + 1;
+        end
 
         clk <= 1'b0;
         reset <= 1'b1;
 
         #(CLK_PERIOD*3);
         reset <= 1'b0;
+        start_time = $time;
 
         wait (inst_in == 0);
+        #(CLK_PERIOD*3);
+        end_time = $time;
         repeat (8) #(CLK_PERIOD);
 
+        run_time = end_time - start_time;
+        throughput = (i/run_time)*1000;
+        $display("i = %d, run_time = %d", i, run_time);
+        $display("Average throughput = %f MIPS", throughput);
         for(count = 0; count < 128; count = count + 1)
             $fdisplay(fd1, "Memory location # %4d : %h", count, dm0.MEM[count]);
-//---------------------------------------------------------------------------------------
-//         #(CLK_PERIOD*4);
-//         reset <= 1'b1;
 
-//         fd[1] = $fopen("./output_file/dmem_content_2.out", "w");
-//         $readmemh("./test_cases/dmem.fill", dm0.MEM);
-//         $readmemh("./test_cases/imem_2.fill", im0.MEM);
-
-//         #(CLK_PERIOD*3);
-//         reset <= 1'b0;
-        
-//         wait (inst_in == 0);
-//         repeat (8) #(CLK_PERIOD);
-    
-//         // for(count = 1; count < 32; count = count + 1)
-//         //     $fdisplay(fd3, "%1d: %h", count, dut.RF.mem_array[count]);
-
-//         for(count = 0; count < 32; count = count + 1)
-//             $fdisplay(fd[1], "Memory location # %4d : %h", count, dm0.MEM[count]);
-// //---------------------------------------------------------------------------------------
-//         #(CLK_PERIOD*4);
-//         reset <= 1'b1;
-
-//         fd[2] = $fopen("./output_file/dmem_content_3.out", "w");
-//         $readmemh("./test_cases/dmem.fill", dm0.MEM);
-//         $readmemh("./test_cases/imem_3.fill", im0.MEM);
-
-//         #(CLK_PERIOD*3);
-//         reset <= 1'b0;
-        
-//         wait (inst_in == 0);
-//         repeat (8) #(CLK_PERIOD);
-
-//         for(count = 0; count < 256; count = count + 1)
-//             $fdisplay(fd[2], "Memory location # %4d : %h", count, dm0.MEM[count]);
-// //---------------------------------------------------------------------------------------
-//         #(CLK_PERIOD*4);
-//         reset <= 1'b1;
-
-//         fd[3] = $fopen("./output_file/dmem_content_4.out", "w");
-//         $readmemh("./test_cases/dmem.fill", dm0.MEM);
-//         $readmemh("./test_cases/imem_4.fill", im0.MEM);
-
-//         #(CLK_PERIOD*3);
-//         reset <= 1'b0;
-        
-//         wait (inst_in == 0);
-//         repeat (8) #(CLK_PERIOD);
-
-//         for(count = 0; count < 256; count = count + 1)
-//             $fdisplay(fd[3], "Memory location # %4d : %h", count, dm0.MEM[count]);
-
-        $fclose(fd1);
+        $fclose(fd1|fd2);
         $finish;
     end
 
@@ -131,7 +97,7 @@ module tb_cardinal_processor;
     begin
         //watchdog timer
         #100000;
-        $fclose(fd1);
+        $fclose(fd1|fd2);
         $finish;
-    end  
+    end
 endmodule

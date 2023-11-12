@@ -154,15 +154,15 @@ module alu (
         endcase
     end
     
-    DW02_mult #(.A_width(8), .B_width(8)) mul_b0 (.A(mul_A[0:7]), .B(mul_B[0:7]), .TC(0), .PRODUCT(product_b[0:15]));
-    DW02_mult #(.A_width(8), .B_width(8)) mul_b1 (.A(mul_A[8:15]), .B(mul_B[8:15]), .TC(0), .PRODUCT(product_b[16:31]));
-    DW02_mult #(.A_width(8), .B_width(8)) mul_b2 (.A(mul_A[16:23]), .B(mul_B[16:23]), .TC(0), .PRODUCT(product_b[32:47]));
-    DW02_mult #(.A_width(8), .B_width(8)) mul_b3 (.A(mul_A[24:31]), .B(mul_B[24:31]), .TC(0), .PRODUCT(product_b[48:63]));
+    DW02_mult #(.A_width(8), .B_width(8)) mul_b0 (.A(mul_A[0:7]), .B(mul_B[0:7]), .TC(1'b0), .PRODUCT(product_b[0:15]));
+    DW02_mult #(.A_width(8), .B_width(8)) mul_b1 (.A(mul_A[8:15]), .B(mul_B[8:15]), .TC(1'b0), .PRODUCT(product_b[16:31]));
+    DW02_mult #(.A_width(8), .B_width(8)) mul_b2 (.A(mul_A[16:23]), .B(mul_B[16:23]), .TC(1'b0), .PRODUCT(product_b[32:47]));
+    DW02_mult #(.A_width(8), .B_width(8)) mul_b3 (.A(mul_A[24:31]), .B(mul_B[24:31]), .TC(1'b0), .PRODUCT(product_b[48:63]));
     
-    DW02_mult #(.A_width(16), .B_width(16)) mul_h0 (.A(mul_A[0:15]), .B(mul_B[0:15]), .TC(0), .PRODUCT(product_h[0:31]));
-    DW02_mult #(.A_width(16), .B_width(16)) mul_h1 (.A(mul_A[16:31]), .B(mul_B[16:31]), .TC(0), .PRODUCT(product_h[32:63]));
+    DW02_mult #(.A_width(16), .B_width(16)) mul_h0 (.A(mul_A[0:15]), .B(mul_B[0:15]), .TC(1'b0), .PRODUCT(product_h[0:31]));
+    DW02_mult #(.A_width(16), .B_width(16)) mul_h1 (.A(mul_A[16:31]), .B(mul_B[16:31]), .TC(1'b0), .PRODUCT(product_h[32:63]));
 
-    DW02_mult #(.A_width(32), .B_width(32)) mul_w (.A(mul_A), .B(mul_B), .TC(0), .PRODUCT(product_w));
+    DW02_mult #(.A_width(32), .B_width(32)) mul_w (.A(mul_A), .B(mul_B), .TC(1'b0), .PRODUCT(product_w));
 
     //division and modulo operation
     wire [0:63] quotient_b, quotient_h, quotient_w, quotient_d, remainder_b, remainder_h, remainder_w, remainder_d;
@@ -177,7 +177,7 @@ module alu (
     DW_div #(.a_width(8), .b_width(8), .tc_mode(0), .rem_mode(0)) div_b7 (.a(ALU_in_0[56:63]), .b(ALU_in_1[56:63]), .quotient(quotient_b[56:63]), .remainder(remainder_b[56:63]), .divide_by_0());
 
     DW_div #(.a_width(16), .b_width(16), .tc_mode(0), .rem_mode(0)) div_h0 (.a(ALU_in_0[0:15]), .b(ALU_in_1[0:15]), .quotient(quotient_h[0:15]), .remainder(remainder_h[0:15]), .divide_by_0());
-    DW_div #(.a_width(16), .b_width(16), .tc_mode(0), .rem_mode(0)) div_h1 (.a(ALU_in_0[15:31]), .b(ALU_in_1[15:31]), .quotient(quotient_h[15:31]), .remainder(remainder_h[15:31]), .divide_by_0());
+    DW_div #(.a_width(16), .b_width(16), .tc_mode(0), .rem_mode(0)) div_h1 (.a(ALU_in_0[16:31]), .b(ALU_in_1[16:31]), .quotient(quotient_h[16:31]), .remainder(remainder_h[16:31]), .divide_by_0());
     DW_div #(.a_width(16), .b_width(16), .tc_mode(0), .rem_mode(0)) div_h2 (.a(ALU_in_0[32:47]), .b(ALU_in_1[32:47]), .quotient(quotient_h[32:47]), .remainder(remainder_h[32:47]), .divide_by_0());
     DW_div #(.a_width(16), .b_width(16), .tc_mode(0), .rem_mode(0)) div_h3 (.a(ALU_in_0[48:63]), .b(ALU_in_1[48:63]), .quotient(quotient_h[48:63]), .remainder(remainder_h[48:63]), .divide_by_0());
 
