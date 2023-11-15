@@ -29,8 +29,17 @@ output peri_node3,
 input [63:0] pedi_node3,
 output peso_node3,
 output [63:0] pedo_node3,
-input pero_node3
-);
+input pero_node3,
+
+output [63:0]dump_data_node0,
+output [63:0]dump_data_node1,
+output [63:0]dump_data_node2,
+output [63:0]dump_data_node3,
+output dump_packet_node0,
+output dump_packet_node1,
+output dump_packet_node2,
+output dump_packet_node3
+);  
 
 //-----------------------------------------------------------------------------------------
 //Wire signals from node 0 to node 4
@@ -79,7 +88,8 @@ gold_router router_node0(
 .clk(clk),
 .reset(reset),
 .polarity(polarity),
-
+.dump_packet(dump_packet_node0),
+.dump_data(dump_data_node0),
 .cwdi(cwd_node3),
 .cwsi(cws_node3),
 .cwri(cwr_node3),
@@ -107,7 +117,8 @@ gold_router router_node1 (
 .clk(clk),
 .reset(reset),
 .polarity(polarity),
-
+.dump_packet(dump_packet_node1),
+.dump_data(dump_data_node1),
 .cwdi(cwd_node0),
 .cwsi(cws_node0),
 .cwri(cwr_node0),
@@ -134,7 +145,8 @@ gold_router router_node2 (
 .clk(clk),
 .reset(reset),
 .polarity(polarity),
-
+.dump_packet(dump_packet_node2),
+.dump_data(dump_data_node2),
 .cwdi(cwd_node1),
 .cwsi(cws_node1),
 .cwri(cwr_node1),
@@ -161,7 +173,8 @@ gold_router router_node3 (
 .clk(clk),
 .reset(reset),
 .polarity(polarity),
-
+.dump_packet(dump_packet_node3),
+.dump_data(dump_data_node3),
 .cwdi(cwd_node2),
 .cwsi(cws_node2),
 .cwri(cwr_node2),
