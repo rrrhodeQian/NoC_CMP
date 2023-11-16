@@ -33,10 +33,6 @@ module buffer #(
             else if (renq) begin
                 flag <= 1'b0;
             end
-            else begin//if not reading nor writing, keep the value
-                mem <= mem;
-                flag <= flag;
-            end
         end
     end
 

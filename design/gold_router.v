@@ -1,7 +1,7 @@
 module gold_router(
 input wire clk,
 input wire reset,
-input wire polarity,
+output reg polarity,
 //Clockwise Input Buffer/Virtual Channels
 input wire [63:0] cwdi,
 input wire cwsi,
@@ -25,7 +25,9 @@ input wire ccwro,
 //Processor Output Buffer/Virtual Channels
 output reg [63:0] pedo,
 output reg peso,
-input wire pero
+input wire pero,
+output reg dump_packet,
+output reg [63:0] dump_data
 );
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -50,9 +52,10 @@ input wire pero
 //Minimal Routing Logic: Only for pe packets as they are just introduced into the ring
 //Also with a Basic Hop Count fault check(dump_packet)
 reg [63:0] updated_pedi;
-reg dump_packet;
+
 
 always @(*) begin
+if (reset == 0) begin
 	if (pedi [55:48] == 8'b0000_0001) begin//Only One Hop 
 		updated_pedi = pedi;//No need to Change
 		dump_packet = 0;//No dump
@@ -69,6 +72,16 @@ always @(*) begin
 	else begin //All other conditions means packet contains fault
 		dump_packet = 1;//Dump the packet
 	end
+end
+
+end
+
+
+always @(*) begin
+  if (dump_packet) begin
+  dump_data = pedi;
+
+  end
 end
 //------------------------------------------------------------------------------------------------------------------------
 //Input Buffer Read Enable, Full/Empty Status
@@ -528,7 +541,7 @@ arbiter pe_arbiter_even(
 );
 
 arbiter cw_arbiter_odd (
-    .clk(clk),
+    .clk(clk),	
     .reset(reset),
     .rq0(cwin_request_cwout_odd),
     .rq1(cwin_request_peout_odd),
@@ -557,13 +570,12 @@ arbiter pe_arbiter_odd (
 //--------------------------------------------------------------------------------------------------------------------
 //With Grant from arbiter, input buffer transfers data to output buffer
 always @(*) begin
-	if (!polarity) begin//in the even phase forward content in even input buffer to even output buffer
+	if (polarity==0) begin//in the even phase forward content in even input buffer to even output buffer
 		if (cwin_grant_cwout_even || cwin_grant_peout_even) begin//either cw even in -> out buffer or cw even in -> pe buffer request is granted
 			cw_even_input_ren = 1;
 			if (cwin_grant_cwout_even) begin
+				cwin_output_buffer_even[63:0] = cw_input_buffer_even[63:0];
 				cwin_output_buffer_even[55:48] = cw_input_buffer_even[55:48] >> 1;
-				cwin_output_buffer_even[63:56] = cw_input_buffer_even[63:56];
-				cwin_output_buffer_even[47:0] = cw_input_buffer_even[47:0];
 			end
 			else begin
 				pein_output_buffer_even[55:48] = cw_input_buffer_even[55:48] >> 1;
@@ -583,9 +595,9 @@ always @(*) begin
 				ccwin_output_buffer_even[47:0] = ccw_input_buffer_even[47:0];
 			end
 			else begin
+				pein_output_buffer_even[63:0] = ccw_input_buffer_even[63:0];
 				pein_output_buffer_even[55:48] = ccw_input_buffer_even[55:48] >> 1;
-				pein_output_buffer_even[63:56] = ccw_input_buffer_even[63:56];
-				pein_output_buffer_even[47:0] = ccw_input_buffer_even[47:0];
+
 			end
 		end
 		else begin
@@ -706,36 +718,20 @@ end
 //If Buffer is full and the target Input Buffer is ready to receive (ro == 1)
 always @(*) begin
 	if (polarity) begin//in odd phase enable even channel output read if condition allowed
-		if (cw_even_output_full && cwro)
-			cw_even_output_ren = 1;
-		else
-			cw_even_output_ren = 0;
-
-		if (ccw_even_output_full && ccwro)
-			ccw_even_output_ren = 1;
-		else
-			ccw_even_output_ren = 0;
-
-		if (pe_even_output_full && pero)
-			pe_even_output_ren = 1;
-		else
-			pe_even_output_ren = 0;
+			cw_even_output_ren = cwso & cwro;
+			ccw_even_output_ren = ccwso & ccwro;
+			pe_even_output_ren = peso & pero;
+			cw_odd_output_ren = 0;
+			ccw_odd_output_ren = 0;
+			pe_odd_output_ren = 0;
 	end
 	else begin
-		if (cw_odd_output_full && cwro)
-			cw_odd_output_ren = 1;
-		else
-			cw_odd_output_ren = 0;
-
-		if (ccw_odd_output_full && ccwro)
-			ccw_odd_output_ren = 1;
-		else
-			ccw_odd_output_ren = 0;
-
-		if (pe_odd_output_full && pero)
-			pe_odd_output_ren = 1;
-		else
-			pe_odd_output_ren = 0;
+			cw_odd_output_ren = cwso & cwro;
+			ccw_odd_output_ren = ccwso & ccwro;
+			pe_odd_output_ren = pe_odd_output_full & pero;
+			cw_even_output_ren = 0;
+			ccw_even_output_ren = 0;
+			pe_even_output_ren = 0;
 	end
 end
 //--------------------------------------------------------------------------------------------------------------------
@@ -744,36 +740,15 @@ end
 
 always @(*) begin
 	if (polarity) begin
-		if (cw_even_output_full)
-			cwso = 1;
-		else
-			cwso = 0;
+			cwso = cw_even_output_full & cwro;
+			ccwso = ccw_even_output_full & ccwro;
+			peso = pe_even_output_full & pero;
 
-		if (ccw_even_output_full)
-			ccwso = 1;
-		else
-			ccwso = 0;
-
-		if (pe_even_output_full)
-			peso = 1;
-		else
-			peso = 0;
 	end
 	else begin
-		if (cw_odd_output_full)
-			cwso = 1;
-		else
-			cwso = 0;
-
-		if (ccw_odd_output_full)
-			cwso = 1;
-		else
-			cwso = 0;
-
-		if (pe_odd_output_full)
-			peso = 1;
-		else
-			peso = 0;
+			cwso = cw_odd_output_full & cwro;
+			ccwso = ccw_odd_output_full & ccwro;
+			peso = pe_odd_output_full & pero;
 		end
 end
 
@@ -791,4 +766,15 @@ always @(*) begin
 		pedo = pe_output_buffer_odd;
 	end
 end
+
+
+//Polarity Generation
+always @(posedge clk) begin
+if (reset) begin
+polarity <= 1;end
+else begin
+polarity <= ~polarity;
+end
+end
+
 endmodule

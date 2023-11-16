@@ -14,7 +14,7 @@ module cardinal_nic #(
     output [0:PAC_WIDTH-1] net_do,//packet data for the network output channel
     input net_polarity,//polarity input from the router connnected to the NIC
     input clk,
-    input reset//sync high active reset
+    input reset//sync high active reset     
 );
     wire [0:PAC_WIDTH-1] in_buf_d_out, out_buf_d_out;//data ouput of input and output buffer
     wire in_buf_status, out_buf_status;//status reg of input and out buffer
