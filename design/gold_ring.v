@@ -1,7 +1,7 @@
 module gold_ring(
 input clk,
 input reset,
-output polarity,
+output reg polarity,
 //Node0
 input pesi_node0,
 output peri_node0,
@@ -197,6 +197,13 @@ gold_router router_node3 (
 );
 
 //-----------------------------------------------------------------------------------------
-
+//Polarity Generation
+always @(posedge clk) begin
+if (reset) begin
+polarity <= 0;end
+else begin
+polarity <= ~polarity;
+end
+end
 endmodule
 
