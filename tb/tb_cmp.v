@@ -11,7 +11,7 @@
 `timescale 1ns/10ps
 
 //Define the clock cycle
-`define CYCLE_TIME 100
+`define CYCLE_TIME 4
 
 // Include Files
 // Memory Files
@@ -145,7 +145,7 @@ cardinal_cmp CMP(
 	.reset(RESET),
 	
 	.node0_inst_in	(node0_inst_in	),
-	.node0_d_in	(node0_d_in	),
+	.node0_d_in		(node0_d_in	),
 	.node0_pc_out  	(node0_pc_out),
 	.node0_d_out   	(node0_d_out ),
 	.node0_addr_out	(node0_addr_out),
@@ -190,15 +190,15 @@ end
 	
 initial
 begin
-	$readmemh("cmp_test.imem.0.fill", IM_node0.MEM); 	// loading instruction memory into node0
-	$readmemh("cmp_test.imem.1.fill", IM_node1.MEM); 	// loading instruction memory into node1
-	$readmemh("cmp_test.imem.2.fill", IM_node2.MEM); 	// loading instruction memory into node2
-	$readmemh("cmp_test.imem.3.fill", IM_node3.MEM); 	// loading instruction memory into node3
+	$readmemh("./test_cases/testcase41/cmp_test.imem.0.fill", IM_node0.MEM); 	// loading instruction memory into node0
+	$readmemh("./test_cases/testcase41/cmp_test.imem.1.fill", IM_node1.MEM); 	// loading instruction memory into node1
+	$readmemh("./test_cases/testcase41/cmp_test.imem.2.fill", IM_node2.MEM); 	// loading instruction memory into node2
+	$readmemh("./test_cases/testcase41/cmp_test.imem.3.fill", IM_node3.MEM); 	// loading instruction memory into node3
 
-	$readmemh("cmp_test.dmem.0.fill", DM_node0.MEM); 	// loading data memory into node0
-	$readmemh("cmp_test.dmem.1.fill", DM_node1.MEM); 	// loading data memory into node1
-	$readmemh("cmp_test.dmem.2.fill", DM_node2.MEM); 	// loading data memory into node2
-	$readmemh("cmp_test.dmem.3.fill", DM_node3.MEM); 	// loading data memory into node3
+	$readmemh("./test_cases/testcase41/cmp_test.dmem.0.fill", DM_node0.MEM); 	// loading data memory into node0
+	$readmemh("./test_cases/testcase41/cmp_test.dmem.1.fill", DM_node1.MEM); 	// loading data memory into node1
+	$readmemh("./test_cases/testcase41/cmp_test.dmem.2.fill", DM_node2.MEM); 	// loading data memory into node2
+	$readmemh("./test_cases/testcase41/cmp_test.dmem.3.fill", DM_node3.MEM); 	// loading data memory into node3
 
 	// $readmemh("cmp_test.nic.0.fill", CMP.NIC_NODE0.MEM);	// loading dummy nic 0 memory
 	// $readmemh("cmp_test.nic.1.fill", CMP.NIC_NODE1.MEM);	// loading dummy nic 1 memory
@@ -218,18 +218,18 @@ begin
 	// Let us now flush the pipe line
 	repeat(5) @(negedge CLK); 
 	// Open file for output
-	dmem0_dump_file = $fopen("cmp_test.dmem0.dump"); // assigning the channel descriptor for output file
-	dmem1_dump_file = $fopen("cmp_test.dmem1.dump"); // assigning the channel descriptor for output file
-	dmem2_dump_file = $fopen("cmp_test.dmem2.dump"); // assigning the channel descriptor for output file
-	dmem3_dump_file = $fopen("cmp_test.dmem3.dump"); // assigning the channel descriptor for output file
+	dmem0_dump_file = $fopen("./output_file/cmp_test.dmem0.dump"); // assigning the channel descriptor for output file
+	dmem1_dump_file = $fopen("./output_file/cmp_test.dmem1.dump"); // assigning the channel descriptor for output file
+	dmem2_dump_file = $fopen("./output_file/cmp_test.dmem2.dump"); // assigning the channel descriptor for output file
+	dmem3_dump_file = $fopen("./output_file/cmp_test.dmem3.dump"); // assigning the channel descriptor for output file
 
 	// Let us now dump all the locations of the data memory now
 	for (i=0; i<128; i=i+1) 
 	begin
-		$fdisplay(dmem0_dump_file, "Memory location #%d : %h ", i, DM_node0.MEM[i]);
-		$fdisplay(dmem1_dump_file, "Memory location #%d : %h ", i, DM_node1.MEM[i]);
-		$fdisplay(dmem2_dump_file, "Memory location #%d : %h ", i, DM_node2.MEM[i]);
-		$fdisplay(dmem3_dump_file, "Memory location #%d : %h ", i, DM_node3.MEM[i]);
+		$fdisplay(dmem0_dump_file, "Memory location # %4d : %h ", i, DM_node0.MEM[i]);
+		$fdisplay(dmem1_dump_file, "Memory location # %4d : %h ", i, DM_node1.MEM[i]);
+		$fdisplay(dmem2_dump_file, "Memory location # %4d : %h ", i, DM_node2.MEM[i]);
+		$fdisplay(dmem3_dump_file, "Memory location # %4d : %h ", i, DM_node3.MEM[i]);
 	end
 	$fclose(dmem0_dump_file);
 	$fclose(dmem1_dump_file);

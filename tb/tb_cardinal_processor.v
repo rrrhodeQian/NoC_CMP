@@ -14,7 +14,7 @@ module tb_cardinal_processor;
     wire [0:DATA_WIDTH-1] dmem_data;//data input from dmem to processor
     wire [0:DATA_WIDTH-1] nic_data;//data input from nic
     wire nicEn, nicWrEn;//nic enable and write enable output
-    wire [0:2] nic_addr;//nic register file address
+    wire [0:1] nic_addr;//nic register file address
     wire [0:DATA_WIDTH-1] d_out;//data output from register file to nic
 
     cardinal_processor dut(
@@ -59,10 +59,10 @@ module tb_cardinal_processor;
     initial begin
         //Test with all provided imem.fill files and compare with expected_dmem.dump
         //To change which imem.fill to be read, change the file name, as well as the dmem_content.out name
-        fd1 = $fopen("./output_file/dmem_content_41.out", "w");
+        fd1 = $fopen("./output_file/dmem_content_36.out", "w");
         fd2 = $fopen("./output_file/forwarding_help.out", "w");
         $readmemh("./test_cases/dmem.fill", dm0.MEM);
-        $readmemh("./test_cases/imem_41.fill", im0.MEM);
+        $readmemh("./test_cases/imem_36.fill", im0.MEM);
         $fmonitor(fd2, "At time %3d ns, fw_rA_sel = %b, fw_rB_sel = %b, ALU_in_0 = %h, ALU_in_1 = %h, data_WB = %h, ID_EXM_reg[5:68] = %h, ID_EXM_reg[69:132] = %h", $time, dut.fw_rA_sel, dut.fw_rB_sel, dut.ALU_in_0, dut.ALU_in_1, dut.data_WB, dut.ID_EXM_reg[5:68], dut.ID_EXM_reg[69:132]);
 
         i = 0;

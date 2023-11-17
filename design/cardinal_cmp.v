@@ -28,13 +28,14 @@ wire [0:1] node0_addr_nic, node1_addr_nic, node2_addr_nic, node3_addr_nic;
 
 
 //Ring Dump Files and Signal
-wire dump_data_node0,dump_data_node1,dump_data_node2,dump_data_node3;
+wire [0:63] dump_data_node0,dump_data_node1,dump_data_node2,dump_data_node3;
 wire dump_packet_node0,dump_packet_node1,dump_packet_node2,dump_packet_node3;
 //Instantiate Ring
 
 gold_ring ring(
     .clk(clk),
     .reset(reset),
+    .ring_polarity(polarity),
     /*Dump Packet Signal and Data*/
     .dump_data_node0(dump_data_node0),
     .dump_data_node1(dump_data_node1),

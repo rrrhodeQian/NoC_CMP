@@ -1,7 +1,7 @@
 module gold_ring(
 input clk,
 input reset,
-output polarity,
+output ring_polarity,
 //Node0
 input pesi_node0,
 output peri_node0,
@@ -81,6 +81,8 @@ wire ccwr_node3;
 wire ccws_node3;
 wire [63:0] ccwd_node3;
 
+reg node_polarity;
+wire polarity;
 //-----------------------------------------------------------------------------------------
 //Router Instantiations
 //Node 0
@@ -198,5 +200,14 @@ gold_router router_node3 (
 
 //-----------------------------------------------------------------------------------------
 
-endmodule
+always @(posedge clk) begin
+    if (reset) begin
+        node_polarity <= 1'b0;
+    end
+    else
+        node_polarity <= ~node_polarity;
+end
 
+assign polarity = node_polarity;
+assign ring_polarity = node_polarity;
+endmodule

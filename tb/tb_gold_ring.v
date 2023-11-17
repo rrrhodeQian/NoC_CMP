@@ -76,7 +76,7 @@ end
 gold_ring ring(
 .clk(clk),
 .reset(reset),
-.polarity(polarity),
+// .polarity(polarity),
 // Node 0
 .peri_node0(peri_node0),
 .pesi_node0(pesi_node0),

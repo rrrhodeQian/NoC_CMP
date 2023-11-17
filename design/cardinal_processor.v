@@ -15,7 +15,7 @@ module cardinal_processor (
     input [0:DATA_WIDTH-1] dmem_data;//data input from dmem to processor
     input [0:DATA_WIDTH-1] nic_data;//data input from nic
     output nicEn, nicWrEn;//nic enable and write enable output
-    output [0:2] nic_addr;//nic register file address
+    output [0:1] nic_addr;//nic register file address
     output [0:DATA_WIDTH-1] d_out;//data output from register file to nic
 
     localparam  R_ALU = 6'b101010,
@@ -115,7 +115,6 @@ module cardinal_processor (
     assign nic_addr_ID = imme_addr[30:31];//address for nic registers
     assign branch_q = ((beq && (reg_file_dout_1 == 64'b0)) || (bneq && (reg_file_dout_1 != 64'b0))) ? 1'b1 : 1'b0;//assert branch qualified if beq and (rD) == 0 or bneq and (rD) != 0
     assign reg_data = reg_file_dout_1;
-    assign d_out = reg_file_dout_1;
     assign dmem_addr = imme_addr;
     assign br_addr = imme_addr;
     assign source_ID_1 = (!rB_rD_sel) ? IF_ID_reg[16:20] : IF_ID_reg[6:10];//select rB for read address 1 if rB_rD_sel is 0
@@ -127,6 +126,7 @@ module cardinal_processor (
     assign rD_EXM = ID_EXM_reg[0:4];
     assign ALU_in_0 = (!fw_rA_sel) ? ID_EXM_reg[5:68] : data_WB;
     assign ALU_in_1 = (!fw_rB_sel) ? ID_EXM_reg[69:132] : data_WB;
+    assign d_out = ID_EXM_reg[69:132];
     assign rA_EXM = ID_EXM_reg[133:137];
     assign rB_EXM = ID_EXM_reg[138:142];
     assign PPP_EXM = ID_EXM_reg[143:145];
@@ -139,6 +139,7 @@ module cardinal_processor (
     assign L_local_external_EXM = ID_EXM_reg[159];
     assign load_data = (!L_local_external_EXM) ? dmem_data : nic_data;
     assign R_L_mode_EXM = ID_EXM_reg[160];
+    
 
     //control logic in WB stage
     assign rD_WB = EXM_WB_reg[0:4];

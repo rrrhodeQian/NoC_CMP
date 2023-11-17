@@ -191,7 +191,7 @@ module alu (
     DW_sqrt #(.width(8), .tc_mode(0)) sqrt_b0 (.a(ALU_in_0[0:7]), .root(root_b[4:7]));
     DW_sqrt #(.width(8), .tc_mode(0)) sqrt_b1 (.a(ALU_in_0[8:15]), .root(root_b[12:15]));
     DW_sqrt #(.width(8), .tc_mode(0)) sqrt_b2 (.a(ALU_in_0[16:23]), .root(root_b[20:23]));
-    DW_sqrt #(.width(8), .tc_mode(0)) sqrt_b3 (.a(ALU_in_0[24:31]), .root(root_b[27:31]));
+    DW_sqrt #(.width(8), .tc_mode(0)) sqrt_b3 (.a(ALU_in_0[24:31]), .root(root_b[28:31]));
     DW_sqrt #(.width(8), .tc_mode(0)) sqrt_b4 (.a(ALU_in_0[32:39]), .root(root_b[36:39]));
     DW_sqrt #(.width(8), .tc_mode(0)) sqrt_b5 (.a(ALU_in_0[40:47]), .root(root_b[44:47]));
     DW_sqrt #(.width(8), .tc_mode(0)) sqrt_b6 (.a(ALU_in_0[48:55]), .root(root_b[52:55]));
