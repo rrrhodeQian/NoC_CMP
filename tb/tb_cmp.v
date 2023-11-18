@@ -226,10 +226,10 @@ begin
 	// Let us now dump all the locations of the data memory now
 	for (i=0; i<128; i=i+1) 
 	begin
-		$fdisplay(dmem0_dump_file, "Memory location # %4d : %h ", i, DM_node0.MEM[i]);
-		$fdisplay(dmem1_dump_file, "Memory location # %4d : %h ", i, DM_node1.MEM[i]);
-		$fdisplay(dmem2_dump_file, "Memory location # %4d : %h ", i, DM_node2.MEM[i]);
-		$fdisplay(dmem3_dump_file, "Memory location # %4d : %h ", i, DM_node3.MEM[i]);
+		$fdisplay(dmem0_dump_file, "Memory location #       %4d : %h ", i, DM_node0.MEM[i]);
+		$fdisplay(dmem1_dump_file, "Memory location #       %4d : %h ", i, DM_node1.MEM[i]);
+		$fdisplay(dmem2_dump_file, "Memory location #       %4d : %h ", i, DM_node2.MEM[i]);
+		$fdisplay(dmem3_dump_file, "Memory location #       %4d : %h ", i, DM_node3.MEM[i]);
 	end
 	$fclose(dmem0_dump_file);
 	$fclose(dmem1_dump_file);
