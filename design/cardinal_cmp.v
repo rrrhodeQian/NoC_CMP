@@ -1,12 +1,17 @@
 module cardinal_cmp(
 input clk, reset,
-input [0:31] node0_inst_in, node1_inst_in, node2_inst_in, node3_inst_in,
-input [0:63] node0_d_in, node1_d_in, node2_d_in, node3_d_in,
-output node0_memEn, node1_memEn, node2_memEn, node3_memEn,
-output node0_memWrEn, node1_memWrEn, node2_memWrEn, node3_memWrEn,
-output [0:63] node0_d_out, node1_d_out, node2_d_out, node3_d_out,
-output [0:31] node0_addr_out, node1_addr_out, node2_addr_out, node3_addr_out,
-output [0:31] node0_pc_out, node1_pc_out, node2_pc_out, node3_pc_out
+input [0:31] node0_inst_in, node1_inst_in, node2_inst_in, node3_inst_in,//Instruction from instruction memory to the processor
+input [0:63] node0_d_in, node1_d_in, node2_d_in, node3_d_in,//Input data from data memory to the processor
+output [0:31] node0_pc_out, node1_pc_out, node2_pc_out, node3_pc_out,//Program counter to the instruction memory
+output [0:63] node0_d_out, node1_d_out, node2_d_out, node3_d_out,//Output data to the write port of data memory
+output [0:31] node0_addr_out, node1_addr_out, node2_addr_out, node3_addr_out,//Output address to the data memory
+output node0_memWrEn, node1_memWrEn, node2_memWrEn, node3_memWrEn,//Data memory write enable signal
+output node0_memEn, node1_memEn, node2_memEn, node3_memEn,//Data memory enable signal
+output [0:1] node0_addr_nic, node1_addr_nic, node2_addr_nic, node3_addr_nic,//2-bit address to the NIC
+output [0:63] node0_din_nic, node1_din_nic, node2_din_nic, node3_din_nic,//ports to monitor data input port of the NIC
+output [0:63] node0_dout_nic, node1_dout_nic, node2_dout_nic, node3_dout_nic,//ports to monitor data output port of the NIC
+output node0_nicEn, node1_nicEn, node2_nicEn, node3_nicEn,//ports to monitor NIC enable signal
+output node0_nicWrEn, node1_nicWrEn, node2_nicWrEn, node3_nicWrEn//ports to monitor NIC write enable signal
 );
 
 //Connecting NIC and Ring
@@ -21,15 +26,38 @@ wire polarity;
 //Connecting NIC and Processor
 wire node0_en_nic, node1_en_nic, node2_en_nic, node3_en_nic;
 wire node0_write_en_nic, node1_write_en_nic, node2_write_en_nic, node3_write_en_nic;
-wire [0:63] node0_din_nic, node1_din_nic, node2_din_nic, node3_din_nic;
-wire [0:63] node0_dout_nic, node1_dout_nic, node2_dout_nic, node3_dout_nic;
-wire [0:1] node0_addr_nic, node1_addr_nic, node2_addr_nic, node3_addr_nic;
-
-
+wire [0:63] node0_din_proc_nic, node1_din_proc_nic, node2_din_proc_nic, node3_din_proc_nic;
+wire [0:63] node0_dout_nic_proc, node1_dout_nic_proc, node2_dout_nic_proc, node3_dout_nic_proc;
+wire [0:1] node0_addr_proc_nic, node1_addr_proc_nic, node2_addr_proc_nic, node3_addr_proc_nic;
 
 //Ring Dump Files and Signal
 wire [0:63] dump_data_node0,dump_data_node1,dump_data_node2,dump_data_node3;
 wire dump_packet_node0,dump_packet_node1,dump_packet_node2,dump_packet_node3;
+
+assign node0_addr_nic = node0_addr_proc_nic;
+assign node1_addr_nic = node1_addr_proc_nic;
+assign node2_addr_nic = node2_addr_proc_nic;
+assign node3_addr_nic = node3_addr_proc_nic;
+
+assign node0_din_nic = node0_din_proc_nic;
+assign node1_din_nic = node1_din_proc_nic;
+assign node2_din_nic = node2_din_proc_nic;
+assign node3_din_nic = node3_din_proc_nic;
+
+assign node0_dout_nic = node0_dout_nic_proc;
+assign node1_dout_nic = node1_dout_nic_proc;
+assign node2_dout_nic = node2_dout_nic_proc;
+assign node3_dout_nic = node3_dout_nic_proc;
+
+assign node0_nicEn = node0_en_nic;
+assign node1_nicEn = node1_en_nic;
+assign node2_nicEn = node2_en_nic;
+assign node3_nicEn = node3_en_nic;
+
+assign node0_nicWrEn = node0_write_en_nic;
+assign node1_nicWrEn = node1_write_en_nic;
+assign node2_nicWrEn = node2_write_en_nic;
+assign node3_nicWrEn = node3_write_en_nic;
 //Instantiate Ring
 
 gold_ring ring(
@@ -82,9 +110,9 @@ gold_ring ring(
 cardinal_nic NIC_node0(
     .reset(reset),
     .clk(clk),
-    .addr(node0_addr_nic),
-    .d_in(node0_din_nic),
-    .d_out(node0_dout_nic),
+    .addr(node0_addr_proc_nic),
+    .d_in(node0_din_proc_nic),
+    .d_out(node0_dout_nic_proc),
     .nicEn(node0_en_nic),
     .nicWrEn(node0_write_en_nic),
     .net_si(node0_si_net),
@@ -99,9 +127,9 @@ cardinal_nic NIC_node0(
 cardinal_nic NIC_node1(
     .reset(reset),
     .clk(clk),
-    .addr(node1_addr_nic),
-    .d_in(node1_din_nic),
-    .d_out(node1_dout_nic),
+    .addr(node1_addr_proc_nic),
+    .d_in(node1_din_proc_nic),
+    .d_out(node1_dout_nic_proc),
     .nicEn(node1_en_nic),
     .nicWrEn(node1_write_en_nic),
     .net_si(node1_si_net),
@@ -116,9 +144,9 @@ cardinal_nic NIC_node1(
 cardinal_nic NIC_node2(
     .reset(reset),
     .clk(clk),
-    .addr(node2_addr_nic),
-    .d_in(node2_din_nic),
-    .d_out(node2_dout_nic),
+    .addr(node2_addr_proc_nic),
+    .d_in(node2_din_proc_nic),
+    .d_out(node2_dout_nic_proc),
     .nicEn(node2_en_nic),
     .nicWrEn(node2_write_en_nic),
     .net_si(node2_si_net),
@@ -133,9 +161,9 @@ cardinal_nic NIC_node2(
 cardinal_nic NIC_node3(
     .reset(reset),
     .clk(clk),
-    .addr(node3_addr_nic),
-    .d_in(node3_din_nic),
-    .d_out(node3_dout_nic),
+    .addr(node3_addr_proc_nic),
+    .d_in(node3_din_proc_nic),
+    .d_out(node3_dout_nic_proc),
     .nicEn(node3_en_nic),
     .nicWrEn(node3_write_en_nic),
     .net_si(node3_si_net),
@@ -159,11 +187,11 @@ cardinal_processor cmp_processor0(
     .dmem_addr(node0_addr_out),
     .reg_data(node0_d_out),
     .dmem_data(node0_d_in),
-    .nic_data(node0_dout_nic),
+    .nic_data(node0_dout_nic_proc),
     .nicEn(node0_en_nic),
     .nicWrEn(node0_write_en_nic),
-    .nic_addr(node0_addr_nic),
-    .d_out(node0_din_nic)
+    .nic_addr(node0_addr_proc_nic),
+    .d_out(node0_din_proc_nic)
   );
   
   cardinal_processor cmp_processor1(
@@ -176,11 +204,11 @@ cardinal_processor cmp_processor0(
     .dmem_addr(node1_addr_out),
     .reg_data(node1_d_out),
     .dmem_data(node1_d_in),
-    .nic_data(node1_dout_nic),
+    .nic_data(node1_dout_nic_proc),
     .nicEn(node1_en_nic),
     .nicWrEn(node1_write_en_nic),
-    .nic_addr(node1_addr_nic),
-    .d_out(node1_din_nic)
+    .nic_addr(node1_addr_proc_nic),
+    .d_out(node1_din_proc_nic)
   );
   
   cardinal_processor cmp_processor2(
@@ -193,11 +221,11 @@ cardinal_processor cmp_processor0(
     .dmem_addr(node2_addr_out),
     .reg_data(node2_d_out),
     .dmem_data(node2_d_in),
-    .nic_data(node2_dout_nic),
+    .nic_data(node2_dout_nic_proc),
     .nicEn(node2_en_nic),
     .nicWrEn(node2_write_en_nic),
-    .nic_addr(node2_addr_nic),
-    .d_out(node2_din_nic)
+    .nic_addr(node2_addr_proc_nic),
+    .d_out(node2_din_proc_nic)
   );
   
   cardinal_processor cmp_processor3(
@@ -210,11 +238,11 @@ cardinal_processor cmp_processor0(
     .dmem_addr(node3_addr_out),
     .reg_data(node3_d_out),
     .dmem_data(node3_d_in),
-    .nic_data(node3_dout_nic),
+    .nic_data(node3_dout_nic_proc),
     .nicEn(node3_en_nic),
     .nicWrEn(node3_write_en_nic),
-    .nic_addr(node3_addr_nic),
-    .d_out(node3_din_nic)
+    .nic_addr(node3_addr_proc_nic),
+    .d_out(node3_din_proc_nic)
   );
   
 

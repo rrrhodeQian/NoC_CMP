@@ -80,10 +80,10 @@ end
 
 
 always @(*) begin
-  if (dump_packet) begin
-  dump_data = pedi;
-
-  end
+  if (dump_packet)
+  	dump_data = pedi;
+  else
+  	dump_data = 'b0;
 end
 //------------------------------------------------------------------------------------------------------------------------
 //Input Buffer Read Enable, Full/Empty Status

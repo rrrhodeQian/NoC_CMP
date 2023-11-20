@@ -48,6 +48,9 @@ wire [0:31] node0_addr_out;
 wire [0:63] node0_d_out, node0_d_in;
 wire node0_memEn, node0_memWrEn;
 
+wire [0:1] node0_addr_nic;
+wire [0:63] node0_din_nic, node0_dout_nic;
+wire node0_nicEn, node0_nicWrEn;
 
 wire [0:31] node1_pc_out;
 wire [0:31] node1_inst_in;
@@ -55,7 +58,9 @@ wire [0:31] node1_addr_out;
 wire [0:63] node1_d_out, node1_d_in;
 wire node1_memEn, node1_memWrEn;
 
-
+wire [0:1] node1_addr_nic;
+wire [0:63] node1_din_nic, node1_dout_nic;
+wire node1_nicEn, node1_nicWrEn;
 
 wire [0:31] node2_pc_out;
 wire [0:31] node2_inst_in;
@@ -63,7 +68,9 @@ wire [0:31] node2_addr_out;
 wire [0:63] node2_d_out, node2_d_in;
 wire node2_memEn, node2_memWrEn;
 
-
+wire [0:1] node2_addr_nic;
+wire [0:63] node2_din_nic, node2_dout_nic;
+wire node2_nicEn, node2_nicWrEn;
 
 wire [0:31] node3_pc_out;
 wire [0:31] node3_inst_in;
@@ -71,7 +78,9 @@ wire [0:31] node3_addr_out;
 wire [0:63] node3_d_out, node3_d_in;
 wire node3_memEn, node3_memWrEn;
 
-
+wire [0:1] node3_addr_nic;
+wire [0:63] node3_din_nic, node3_dout_nic;
+wire node3_nicEn, node3_nicWrEn;
 
 
 integer dmem0_dump_file;		// Channel Descriptor for DMEM0 final dump
@@ -151,7 +160,11 @@ cardinal_cmp CMP(
 	.node0_addr_out	(node0_addr_out),
 	.node0_memWrEn	(node0_memWrEn),
 	.node0_memEn    (node0_memEn),
-
+	.node0_addr_nic	(node0_addr_nic), 
+	.node0_din_nic	(node0_din_nic), 
+	.node0_dout_nic	(node0_dout_nic), 
+	.node0_nicEn	(node0_nicEn), 
+	.node0_nicWrEn	(node0_nicWrEn),
 	
 	.node1_inst_in  (node1_inst_in  ),
 	.node1_d_in     (node1_d_in     ),
@@ -160,6 +173,11 @@ cardinal_cmp CMP(
 	.node1_addr_out (node1_addr_out ),
 	.node1_memWrEn  (node1_memWrEn  ),
 	.node1_memEn    (node1_memEn    ),
+	.node1_addr_nic	(node1_addr_nic), 
+	.node1_din_nic	(node1_din_nic), 
+	.node1_dout_nic	(node1_dout_nic), 
+	.node1_nicEn	(node1_nicEn), 
+	.node1_nicWrEn	(node1_nicWrEn),
 
 	
 	.node2_inst_in  (node2_inst_in  ),
@@ -169,6 +187,11 @@ cardinal_cmp CMP(
 	.node2_addr_out (node2_addr_out ),
 	.node2_memWrEn  (node2_memWrEn  ),
 	.node2_memEn    (node2_memEn    ),
+	.node2_addr_nic	(node2_addr_nic), 
+	.node2_din_nic	(node2_din_nic), 
+	.node2_dout_nic	(node2_dout_nic), 
+	.node2_nicEn	(node2_nicEn), 
+	.node2_nicWrEn	(node2_nicWrEn),
 
 	
 	.node3_inst_in  (node3_inst_in  ),
@@ -177,8 +200,12 @@ cardinal_cmp CMP(
 	.node3_d_out    (node3_d_out    ),
 	.node3_addr_out (node3_addr_out ),
 	.node3_memWrEn  (node3_memWrEn  ),
-	.node3_memEn    (node3_memEn    )
-
+	.node3_memEn    (node3_memEn    ),
+	.node3_addr_nic	(node3_addr_nic), 
+	.node3_din_nic	(node3_din_nic), 
+	.node3_dout_nic	(node3_dout_nic), 
+	.node3_nicEn	(node3_nicEn), 
+	.node3_nicWrEn	(node3_nicWrEn)
 	);
 	
 always #(`CYCLE_TIME / 2) CLK <= ~CLK;	
