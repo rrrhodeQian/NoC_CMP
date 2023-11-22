@@ -1,12 +1,13 @@
 module tb_gold_router;
     parameter PAC_WIDTH = 64;
-    reg clk, polarity, reset;
+    reg clk, reset;
     reg cwsi, ccwsi, pesi;
     wire cwri, ccwri, peri;
     reg [PAC_WIDTH-1:0] cwdi, ccwdi, pedi;
     reg cwro, ccwro, pero;
     wire cwso, ccwso, peso;
     wire [PAC_WIDTH-1:0] cwdo, ccwdo, pedo;
+    wire polarity;
     integer fd, i;
 
     gold_router dut(
@@ -22,26 +23,12 @@ module tb_gold_router;
     localparam CLK_PERIOD = 4;
     always #(CLK_PERIOD/2) clk=~clk;
 
-    always @(posedge clk) begin
-        if(reset) polarity <= 1'b0;
-        else polarity <= ~ polarity;
-    end
-
     initial begin
         fd = $fopen("./output_file/gold_router.out", "w");
         if (!fd) begin
             $fdisplay(fd, "File cannot be opened.");
             $finish;
         end
-
-        // if (cwsi) begin
-            // $fmonitor(fd, "At time %3d ns, polarity = %b, cwdi = %h, cwdo = %h", $time, polarity, cwdi, cwdo);
-        // end
-        
-        // if (ccwsi) begin
-            // $fmonitor(fd, "At time %3d ns, polarity = %b, ccwdi = %h, ccwdo = %h", $time, polarity, ccwdi, ccwdo);
-        // end
-        
     end
     
     initial begin
@@ -70,7 +57,7 @@ module tb_gold_router;
             #(CLK_PERIOD);
         end
 
-        #(CLK_PERIOD*3);
+        #(CLK_PERIOD*6);
         cwsi <= 0;
         ccwsi <= 1;
         $fdisplay(fd, "counter-clockwise data flow, hop = 2");
@@ -83,7 +70,7 @@ module tb_gold_router;
             #(CLK_PERIOD);
         end
 
-        #(CLK_PERIOD*3);
+        #(CLK_PERIOD*6);
         $fdisplay(fd, "counter-clockwise data flow, hop = 0");
         for(i = 0; i < 10; i = i + 1) begin
             $fdisplay(fd, "At time %3d ns, polarity = %b, ccwdi = %h, pedo = %h", $time, polarity, ccwdi, pedo);
@@ -94,21 +81,22 @@ module tb_gold_router;
             #(CLK_PERIOD);
         end
 
-        #(CLK_PERIOD*3);
+        #(CLK_PERIOD*6);
         ccwsi <= 0;
         pesi <= 1;
         $fdisplay(fd, "data from pe, hop = 1");
         for(i = 0; i < 10; i = i + 1) begin
             $fdisplay(fd, "At time %3d ns, polarity = %b, pedi = %h, cwdo = %h, ccwdo = %h", $time, polarity, pedi, cwdo, ccwdo);
-            pedi[62] <= ~pedi[62];//every clock cycle change direction
+            pedi[63] <= ~pedi[63];//change virtual channel every clock cycle
+            pedi[62] <= ~pedi[62];//change direction every clock cycle
             pedi[55:48] <= 8'b0000_0001; //hop
             pedi[47:0] = $random;
             #(CLK_PERIOD);
         end
 
-        #(CLK_PERIOD*3);
+        #(CLK_PERIOD*6);
         ccwsi <= 1;
-        pesi <= 1;
+        pesi <= 0;
         cwsi <= 1;
         pedi <= 'b0;
         cwdi <= 'b0;
@@ -121,12 +109,12 @@ module tb_gold_router;
             cwdi[55:48] <= 8'b0000_0000;
             cwdi[47:0] <= $random;
             #(CLK_PERIOD);
-            // $fdisplay(fd, "At time %3d ns, polarity = %b, pedi = %h, cwdi = %h, ccwdi = %h, cwdo = %h, ccwdo = %h, pedo = %h", $time, polarity, pedi, cwdi, ccwdi, cwdo, ccwdo, pedo);
+            $fdisplay(fd, "At time %3d ns, polarity = %b, pedi = %h, cwdi = %h, ccwdi = %h, cwdo = %h, ccwdo = %h, pedo = %h", $time, polarity, pedi, cwdi, ccwdi, cwdo, ccwdo, pedo);
             #(CLK_PERIOD*2);
-            // $fdisplay(fd, "At time %3d ns, polarity = %b, pedi = %h, cwdi = %h, ccwdi = %h, cwdo = %h, ccwdo = %h, pedo = %h", $time, polarity, pedi, cwdi, ccwdi, cwdo, ccwdo, pedo);
+            $fdisplay(fd, "At time %3d ns, polarity = %b, pedi = %h, cwdi = %h, ccwdi = %h, cwdo = %h, ccwdo = %h, pedo = %h", $time, polarity, pedi, cwdi, ccwdi, cwdo, ccwdo, pedo);
         // end
 
-        #(CLK_PERIOD*3);
+        #(CLK_PERIOD*4);
         $fclose(fd);
         $finish;
     end

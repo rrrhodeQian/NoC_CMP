@@ -44,7 +44,7 @@ module cardinal_nic #(
 
     assign net_ri = ~in_buf_status;//input buffer status = 0 -> input buffer is empty -> NIC input channel is ready
     assign net_do = out_buf_d_out;
-    assign net_so = out_buf_status;//same as output buffer status
+    assign net_so = out_buf_status & net_ro;
     
     assign in_buf_wen = (~in_buf_status) & net_si;//enable writing input buffer when input buffer is empty and net_si is asserted
     assign in_buf_ren = (nicEn && (~nicWrEn) && addr == 2'b00) ? 1'b1 : 1'b0;//enable read only if processor wants to

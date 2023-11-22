@@ -25,9 +25,8 @@ input wire ccwro,
 //Processor Output Buffer/Virtual Channels
 output reg [63:0] pedo,
 output reg peso,
-input wire pero,
-output reg dump_packet,
-output reg [63:0] dump_data
+input wire pero
+// output reg [63:0] dump_data
 );
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -52,39 +51,21 @@ output reg [63:0] dump_data
 //Minimal Routing Logic: Only for pe packets as they are just introduced into the ring
 //Also with a Basic Hop Count fault check(dump_packet)
 reg [63:0] updated_pedi;
-
+reg dump_packet;
 
 always @(*) begin
-if (reset == 0) begin
-	if (pedi [55:48] == 8'b0000_0001 || pedi [55:48] == 8'b0000_0011 || pedi [55:48] == 8'b0000_0111) begin//Only One Hop 
-		updated_pedi = pedi;//No need to Change
-		dump_packet = 0;//No dump
-	end
-	// else if ( pedi [55:48] == 8'b0000_0011) begin//There are 2 hops
-	// 	// updated_pedi = {pedi[63],1'b0,pedi[61:0]}; //Automatically Clockwise regardless of original direction
-	// 	updated_pedi = pedi;
-	// 	dump_packet = 0;//No dump
-	// end
-	// else if ( pedi [55:48] == 8'b0000_0111) begin//There are 3 hops
-	// 	updated_pedi = pedi; //Change to opposite direction
-	// 	//and set to 1 hop instead of 3 (updated_pedi bit [50:49] becomes 0
-	// 	dump_packet = 0;
-	// end
-	else begin //All other conditions means packet contains fault
-		updated_pedi = 'b0;
-		dump_packet = 1;//Dump the packet
+	if (reset == 0) begin
+		if (pedi [55:48] == 8'b0000_0001 || pedi [55:48] == 8'b0000_0011 || pedi [55:48] == 8'b0000_0111) begin//Only One Hop 
+			updated_pedi = pedi;//No need to Change
+			dump_packet = 0;//No dump
+		end
+		else begin //All other conditions means packet contains fault
+			updated_pedi = 'b0;
+			dump_packet = 1;//Dump the packet
+		end
 	end
 end
 
-end
-
-
-always @(*) begin
-  if (dump_packet)
-  	dump_data = pedi;
-  else
-  	dump_data = 'b0;
-end
 //------------------------------------------------------------------------------------------------------------------------
 //Input Buffer Read Enable, Full/Empty Status
 reg cw_even_input_wen;
@@ -501,89 +482,156 @@ end
 //Arbitor Instantiation: 6 Arbitors corresponding to 6 buffers
 wire cwin_grant_cwout_even;
 wire cwin_grant_peout_even;
-wire ccwin_grant_ccwo_even;
+wire ccwin_grant_ccwout_even;
 wire ccwin_grant_peout_even;
 wire pein_grant_cwout_even;
 wire pein_grant_ccwout_even;
 
 wire cwin_grant_cwout_odd;
 wire cwin_grant_peout_odd;
-wire ccwin_grant_ccwo_odd;
+wire ccwin_grant_ccwout_odd;
 wire ccwin_grant_peout_odd;
 wire pein_grant_cwout_odd;
 wire pein_grant_ccwout_odd;
 
-
-
 arbiter cw_arbiter_even (
     .clk(clk),
     .reset(reset),
-    .rq0(cwin_request_cwout_even),
-    .rq1(cwin_request_peout_even),
-    .gt0(cwin_grant_cwout_even),
-    .gt1(cwin_grant_peout_even)
+    .rq0(pein_request_cwout_even),
+    .rq1(cwin_request_cwout_even),
+    .gt0(pein_grant_cwout_even),
+    .gt1(cwin_grant_cwout_even)
 );
 
 arbiter ccw_arbiter_even (
     .clk(clk),
     .reset(reset),
-    .rq0(ccwin_request_ccwout_even),
-    .rq1(ccwin_request_peout_even),
-    .gt0(ccwin_grant_ccwout_even),
-    .gt1(ccwin_grant_peout_even)
+    .rq0(pein_request_ccwout_even),
+    .rq1(ccwin_request_ccwout_even),
+    .gt0(pein_grant_ccwout_even),
+    .gt1(ccwin_grant_ccwout_even)
 );
 
 arbiter pe_arbiter_even(
     .clk(clk),
     .reset(reset),
-    .rq0(pein_request_cwout_even),
-    .rq1(pein_request_ccwout_even),
-    .gt0(pein_grant_cwout_even),
-    .gt1(pein_grant_ccwout_even)
+    .rq0(ccwin_request_peout_even),
+    .rq1(cwin_request_peout_even),
+    .gt0(ccwin_grant_peout_even),
+    .gt1(cwin_grant_peout_even)
 );
 
 arbiter cw_arbiter_odd (
     .clk(clk),	
     .reset(reset),
-    .rq0(cwin_request_cwout_odd),
-    .rq1(cwin_request_peout_odd),
-    .gt0(cwin_grant_cwout_odd),
-    .gt1(cwin_grant_peout_odd)
+    .rq0(pein_request_cwout_odd),
+    .rq1(cwin_request_cwout_odd),
+    .gt0(pein_grant_cwout_odd),
+    .gt1(cwin_grant_cwout_odd)
 );
 
 arbiter ccw_arbiter_odd (
     .clk(clk),
     .reset(reset),
-    .rq0(ccwin_request_ccwout_odd),
-    .rq1(ccwin_request_peout_odd),
-    .gt0(ccwin_grant_ccwout_odd),
-    .gt1(ccwin_grant_peout_odd)
+    .rq0(pein_request_ccwout_odd),
+    .rq1(ccwin_request_ccwout_odd),
+    .gt0(pein_grant_ccwout_odd),
+    .gt1(ccwin_grant_ccwout_odd)
 );
 
 arbiter pe_arbiter_odd (
     .clk(clk),
     .reset(reset),
-    .rq0(pein_request_cwout_odd),
-    .rq1(pein_request_ccwout_odd),
-    .gt0(pein_grant_cwout_odd),
-    .gt1(pein_grant_ccwout_odd)
+    .rq0(ccwin_request_peout_odd),
+    .rq1(cwin_request_peout_odd),
+    .gt0(ccwin_grant_peout_odd),
+    .gt1(cwin_grant_peout_odd)
 );
+
+always @(*) begin//output buffer write enable and d_in control
+	if (!polarity) begin//in the even phase
+		if (cwin_grant_cwout_even || pein_grant_cwout_even) begin
+			cw_even_output_wen = 1;
+			if (cwin_grant_cwout_even)
+				cwin_output_buffer_even = {cw_input_buffer_even[63:56], cw_input_buffer_even[55:48] >> 1, cw_input_buffer_even[47:0]};
+			else
+				cwin_output_buffer_even = {pe_input_buffer_even[63:56], pe_input_buffer_even[55:48] >> 1, pe_input_buffer_even[47:0]};
+		end
+		else begin
+			cw_even_output_wen = 0;
+			cwin_output_buffer_even = cw_output_buffer_even;
+		end
+
+		if (ccwin_grant_ccwout_even || pein_grant_ccwout_even) begin
+			ccw_even_output_wen = 1;
+			if (ccwin_grant_ccwout_even)
+				ccwin_output_buffer_even = {ccw_input_buffer_even[63:56], ccw_input_buffer_even[55:48] >> 1, ccw_input_buffer_even[47:0]};
+			else
+				ccwin_output_buffer_even = {pe_input_buffer_even[63:56], pe_input_buffer_even[55:48] >> 1, pe_input_buffer_even[47:0]};
+		end
+		else begin
+			ccw_even_output_wen = 0;
+			ccwin_output_buffer_even = ccw_output_buffer_even;
+		end
+
+		if (cwin_grant_peout_even || ccwin_grant_peout_even) begin
+			pe_even_output_wen = 1;
+			if (cwin_grant_peout_even)
+				pein_output_buffer_even = cw_input_buffer_even;
+			else
+				pein_output_buffer_even = ccw_input_buffer_even;
+		end
+		else begin
+			pe_even_output_wen = 0;
+			pein_output_buffer_even = pe_output_buffer_even;
+		end
+	end
+
+	else begin//in the odd phase
+		if (cwin_grant_cwout_odd || pein_grant_cwout_odd) begin
+			cw_odd_output_wen = 1;
+			if (cwin_grant_cwout_odd)
+				cwin_output_buffer_odd = {cw_input_buffer_odd[63:56], cw_input_buffer_odd[55:48] >> 1, cw_input_buffer_odd[47:0]};
+			else
+				cwin_output_buffer_odd = {pe_input_buffer_odd[63:56], pe_input_buffer_odd[55:48] >> 1, pe_input_buffer_odd[47:0]};
+		end
+		else begin
+			cw_odd_output_wen = 0;
+			cwin_output_buffer_odd = cw_output_buffer_odd;
+		end
+
+		if (ccwin_grant_ccwout_odd || pein_grant_ccwout_odd) begin
+			ccw_odd_output_wen = 1;
+			if (ccwin_grant_ccwout_odd)
+				ccwin_output_buffer_odd = {ccw_input_buffer_odd[63:56], ccw_input_buffer_odd[55:48] >> 1, ccw_input_buffer_odd[47:0]};
+			else
+				ccwin_output_buffer_odd = {pe_input_buffer_odd[63:56], pe_input_buffer_odd[55:48] >> 1, pe_input_buffer_odd[47:0]};
+		end
+		else begin
+			ccw_odd_output_wen = 0;
+			ccwin_output_buffer_odd = ccw_output_buffer_odd;
+		end
+
+		if (cwin_grant_peout_odd || ccwin_grant_peout_odd) begin
+			pe_odd_output_wen = 1;
+			if (cwin_grant_peout_odd)
+				pein_output_buffer_odd = cw_input_buffer_odd;
+			else
+				pein_output_buffer_odd = ccw_input_buffer_odd;
+		end
+		else begin
+			pe_odd_output_wen = 0;
+			pein_output_buffer_odd = pe_output_buffer_odd;
+		end
+	end
+end
 
 //--------------------------------------------------------------------------------------------------------------------
 //With Grant from arbiter, input buffer transfers data to output buffer
 always @(*) begin
-	if (polarity==0) begin//in the even phase forward content in even input buffer to even output buffer
+	if (!polarity) begin//in the even phase forward content in even input buffer to even output buffer
 		if (cwin_grant_cwout_even || cwin_grant_peout_even) begin//either cw even in -> out buffer or cw even in -> pe buffer request is granted
 			cw_even_input_ren = 1;
-			if (cwin_grant_cwout_even) begin
-				cwin_output_buffer_even[63:0] = cw_input_buffer_even[63:0];
-				cwin_output_buffer_even[55:48] = cw_input_buffer_even[55:48] >> 1;
-			end
-			else begin
-				pein_output_buffer_even[55:48] = cw_input_buffer_even[55:48] >> 1;
-				pein_output_buffer_even[63:56] = cw_input_buffer_even[63:56];
-				pein_output_buffer_even[47:0] = cw_input_buffer_even[47:0];
-			end
 		end
 		else begin
 			cw_even_input_ren = 0;
@@ -591,16 +639,6 @@ always @(*) begin
 
 		if (ccwin_grant_ccwout_even || ccwin_grant_peout_even) begin
 			ccw_even_input_ren = 1;
-			if (ccwin_grant_ccwout_even) begin
-				ccwin_output_buffer_even[55:48] = ccw_input_buffer_even[55:48] >> 1;
-				ccwin_output_buffer_even[63:56] = ccw_input_buffer_even[63:56];
-				ccwin_output_buffer_even[47:0] = ccw_input_buffer_even[47:0];
-			end
-			else begin
-				pein_output_buffer_even[63:0] = ccw_input_buffer_even[63:0];
-				pein_output_buffer_even[55:48] = ccw_input_buffer_even[55:48] >> 1;
-
-			end
 		end
 		else begin
 			ccw_even_input_ren = 0;
@@ -608,16 +646,6 @@ always @(*) begin
 
 		if (pein_grant_cwout_even || pein_grant_ccwout_even) begin
 			pe_even_input_ren = 1;
-			if (pein_grant_cwout_even) begin
-				cwin_output_buffer_even[55:48] = pe_input_buffer_even[55:48] >> 1;
-				cwin_output_buffer_even[63:56] = pe_input_buffer_even[63:56];
-				cwin_output_buffer_even[47:0] = pe_input_buffer_even[47:0];
-			end
-			else begin
-				ccwin_output_buffer_even[55:48] = pe_input_buffer_even[55:48] >> 1;
-				ccwin_output_buffer_even[63:56] = pe_input_buffer_even[63:56];
-				ccwin_output_buffer_even[47:0] = pe_input_buffer_even[47:0];
-			end
 		end
 		else begin
 			pe_even_input_ren = 0;
@@ -627,16 +655,6 @@ always @(*) begin
 	else begin
 		if (cwin_grant_cwout_odd || cwin_grant_peout_odd) begin
 			cw_odd_input_ren = 1;
-			if (cwin_grant_cwout_odd) begin
-				cwin_output_buffer_odd[55:48] = cw_input_buffer_odd[55:48] >> 1;
-				cwin_output_buffer_odd[63:56] = cw_input_buffer_odd[63:56];
-				cwin_output_buffer_odd[47:0] = cw_input_buffer_odd[47:0];
-			end
-			else begin
-				pein_output_buffer_odd[55:48] = cw_input_buffer_odd[55:48] >> 1;
-				pein_output_buffer_odd[63:56] = cw_input_buffer_odd[63:56];
-				pein_output_buffer_odd[47:0] = cw_input_buffer_odd[47:0];
-			end
 		end
 		else begin
 			cw_odd_input_ren = 0;
@@ -644,16 +662,6 @@ always @(*) begin
 
 		if (ccwin_grant_ccwout_odd || ccwin_grant_peout_odd) begin
 			ccw_odd_input_ren = 1;
-			if (ccwin_grant_ccwout_odd) begin
-				ccwin_output_buffer_odd[55:48] = ccw_input_buffer_odd[55:48] >> 1;
-				ccwin_output_buffer_odd[63:56] = ccw_input_buffer_odd[63:56];
-				ccwin_output_buffer_odd[47:0] = ccw_input_buffer_odd[47:0];
-			end
-			else begin
-				pein_output_buffer_odd[55:48] = ccw_input_buffer_odd[55:48] >> 1;
-				pein_output_buffer_odd[63:56] = ccw_input_buffer_odd[63:56];
-				pein_output_buffer_odd[47:0] = ccw_input_buffer_odd[47:0];
-			end
 		end
 		else begin
 			ccw_odd_input_ren = 0;
@@ -661,58 +669,12 @@ always @(*) begin
 
 		if (pein_grant_cwout_odd || pein_grant_ccwout_odd) begin
 			pe_odd_input_ren = 1;
-			if (pein_grant_cwout_odd) begin
-				cwin_output_buffer_odd[55:48] = pe_input_buffer_odd[55:48] >> 1;
-				cwin_output_buffer_odd[63:56] = pe_input_buffer_odd[63:56];
-				cwin_output_buffer_odd[47:0] = pe_input_buffer_odd[47:0];
-			end
-			else begin
-				ccwin_output_buffer_odd[55:48] = pe_input_buffer_odd[55:48] >> 1;
-				ccwin_output_buffer_odd[63:56] = pe_input_buffer_odd[63:56];
-				ccwin_output_buffer_odd[47:0] = pe_input_buffer_odd[47:0];
-			end
 		end
 		else begin
 			pe_odd_input_ren = 0;
 		end
 	end
 
-end
-//--------------------------------------------------------------------------------------------------------------------
-//output buffer write enable control logic
-always @(*) begin
-	if (!polarity) begin//in the even phase
-		if (cwin_grant_cwout_even || pein_grant_cwout_even)
-			cw_even_output_wen = 1;
-		else
-			cw_even_output_wen = 0;
-		
-		if (ccwin_grant_ccwout_even || pein_grant_ccwout_even)
-			ccw_even_output_wen = 1;
-		else
-			ccw_even_output_wen = 0;
-		
-		if (cwin_grant_peout_even || ccwin_grant_peout_even)
-			pe_even_output_wen = 1;
-		else
-			pe_even_output_wen = 0;
-	end
-	else begin
-		if (cwin_grant_cwout_odd || pein_grant_cwout_odd)
-			cw_odd_output_wen = 1;
-		else
-			cw_odd_output_wen = 0;
-		
-		if (ccwin_grant_ccwout_odd || pein_grant_ccwout_odd)
-			ccw_odd_output_wen = 1;
-		else
-			ccw_odd_output_wen = 0;
-		
-		if (cwin_grant_peout_odd || ccwin_grant_peout_odd)
-			pe_odd_output_wen = 1;
-		else
-			pe_odd_output_wen = 0;
-	end
 end
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -772,11 +734,12 @@ end
 
 //Polarity Generation
 always @(posedge clk) begin
-if (reset) begin
-polarity <= 1;end
-else begin
-polarity <= ~polarity;
-end
+	if (reset) begin
+		polarity <= 1'b0;
+	end
+	else begin
+		polarity <= ~polarity;
+	end
 end
 
 endmodule

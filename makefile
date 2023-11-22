@@ -42,9 +42,11 @@
 
 # top level module
 TOP = tb_cmp
+# TOP = tb_gold_router
 # TOP = tb_alu
 TOP_SYN = tb_syn
 DESIGN_NAME = cardinal_cmp
+# DESIGN_NAME = gold_router
 # DESIGN_NAME = alu
 
 # List of the design files
